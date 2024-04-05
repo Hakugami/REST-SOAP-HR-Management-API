@@ -20,8 +20,9 @@ public enum DatabaseSingleton {
 
     private DatabaseSingleton() {
         persistenceUnitInfo = new PersistenceUnitInfoImpl();
+        System.out.println(persistenceUnitInfo.getProperties());
         PersistenceProvider persistenceProvider = new HibernatePersistenceProvider();
-        entityManagerFactory = persistenceProvider.createContainerEntityManagerFactory(persistenceUnitInfo, new HashMap<>());
+        entityManagerFactory = persistenceProvider.createContainerEntityManagerFactory(persistenceUnitInfo, persistenceUnitInfo.getProperties());
     }
 
     public void init() {

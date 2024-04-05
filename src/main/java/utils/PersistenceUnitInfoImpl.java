@@ -105,7 +105,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
     @Override
     public List<String> getManagedClassNames() {
-        return List.of();
+        return List.of(
+                "models.entities.Employee",
+                "models.entities.Job",
+                "models.entities.Vacation",
+                "models.entities.Address",
+                "models.entities.Attendance",
+                "models.entities.Project",
+                "models.entities.Department"
+        );
     }
 
     @Override
