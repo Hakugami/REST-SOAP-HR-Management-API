@@ -12,14 +12,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
-
 @Slf4j
 @WebListener
 public class AppContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         DatabaseSingleton.INSTANCE.init();
-
     }
 
     @Override

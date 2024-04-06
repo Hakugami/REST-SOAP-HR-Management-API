@@ -1,14 +1,13 @@
 package models.entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import models.enums.JobTitle;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -21,6 +20,7 @@ public class Job extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Enumerated(EnumType.ORDINAL)
     private JobTitle title;
 
     private String description;
@@ -30,5 +30,9 @@ public class Job extends BaseEntity{
     private BigDecimal maxSalary;
 
     private Integer minExperience;
+
+    @OneToMany(mappedBy = "job")
+    private Set<Employee> employees = new HashSet<>();
+
 
 }

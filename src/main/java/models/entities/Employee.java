@@ -26,9 +26,11 @@ public class Employee extends BaseEntity {
     private Long id;
 
     @NotNull(message = "Username cannot be null")
+    @Column(nullable = false)
     private String username;
 
     @NotNull(message = "Password cannot be null")
+    @Column(nullable = false)
     private String password;
 
     private String firstName;
@@ -56,6 +58,7 @@ public class Employee extends BaseEntity {
 
     private Integer yearsOfExperience;
 
+    @Enumerated(EnumType.ORDINAL)
     private Privilege privilege;
 
     private Integer vacationDays;

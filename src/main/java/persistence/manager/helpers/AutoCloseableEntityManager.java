@@ -1,7 +1,6 @@
 package persistence.manager.helpers;
 
 import jakarta.persistence.EntityManager;
-import lombok.Getter;
 import persistence.manager.DatabaseSingleton;
 
 

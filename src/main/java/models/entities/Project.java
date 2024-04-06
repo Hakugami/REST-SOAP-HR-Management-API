@@ -22,6 +22,7 @@ public class Project extends BaseEntity{
 
     private String description;
 
+    @Enumerated(EnumType.ORDINAL)
     private ProjectStatus status;
 
     private Integer durationInMonths;

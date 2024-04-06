@@ -3,6 +3,7 @@ package models.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import models.enums.AttendanceStatus;
 
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Entity(name = "attendances")
-public class Attendance extends BaseEntity{
+public class Attendance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,5 +24,8 @@ public class Attendance extends BaseEntity{
 
     @ManyToOne
     private Employee employee;
+
+    @Enumerated(EnumType.ORDINAL)
+    private AttendanceStatus status;
 
 }

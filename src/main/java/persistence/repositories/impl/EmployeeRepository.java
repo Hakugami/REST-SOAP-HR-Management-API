@@ -10,7 +10,6 @@ import models.entities.Employee;
 import persistence.repositories.GenericRepository;
 import persistence.repositories.helpers.EmployeeProjection;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,14 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
         super(Employee.class);
     }
 
-    public Optional<EmployeeProjection> employeePartialResponse(String[] fields, Long id , EntityManager entityManager) {
+    private static class SingletonHelper {
+        private static final EmployeeRepository INSTANCE = new EmployeeRepository();
+    }
+    public static EmployeeRepository getInstance() {
+        return EmployeeRepository.SingletonHelper.INSTANCE;
+    }
+
+    public Optional<EmployeeProjection> employeePartialResponse(String[] fields, Long id, EntityManager entityManager) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
         Root<Employee> root = criteriaQuery.from(Employee.class);

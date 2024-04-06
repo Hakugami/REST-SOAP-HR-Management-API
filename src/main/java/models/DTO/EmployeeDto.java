@@ -1,6 +1,7 @@
 package models.DTO;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import models.enums.JobTitle;
@@ -15,6 +16,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Value
+@XmlRootElement
 public class EmployeeDto extends BaseDTO implements Serializable {
     Long id;
     @NotNull(message = "Username cannot be null")
