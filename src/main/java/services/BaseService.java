@@ -9,8 +9,8 @@ import persistence.repositories.GenericRepository;
 import java.util.List;
 
 public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO, ID> {
-    private GenericRepository<ENTITY, ID> repository;
-    private BaseMapper<ENTITY, DTO> mapper;
+    private final GenericRepository<ENTITY, ID> repository;
+    private final BaseMapper<ENTITY, DTO> mapper;
 
     protected BaseService(GenericRepository<ENTITY, ID> repository, BaseMapper<ENTITY, DTO> mapper) {
         this.repository = repository;
@@ -38,7 +38,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO
             ENTITY entity = mapper.updateEntity(dto, repository.read(id, entityManager));
             return repository.update(entity, entityManager);
         });
-
     }
 
 

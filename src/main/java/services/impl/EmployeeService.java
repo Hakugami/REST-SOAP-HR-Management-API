@@ -1,12 +1,15 @@
 package services.impl;
 
-import mappers.BaseMapper;
 import mappers.EmployeeMapper;
 import models.DTO.EmployeeDto;
 import models.entities.Employee;
-import persistence.repositories.GenericRepository;
+import persistence.manager.DatabaseSingleton;
+import persistence.repositories.helpers.EmployeeProjection;
 import persistence.repositories.impl.EmployeeRepository;
 import services.BaseService;
+
+import java.util.List;
+import java.util.Set;
 
 public class EmployeeService extends BaseService<Employee, EmployeeDto,Long>{
     protected EmployeeService() {
@@ -21,6 +24,14 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto,Long>{
         return EmployeeService.SingletonHelper.INSTANCE;
     }
 
+    public EmployeeProjection employeePartialResponse(Long id, Set<String> fields) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager ->
+                EmployeeRepository.getInstance().employeePartialResponse(id, entityManager, fields).orElse(null));
+    }
 
+    public List<EmployeeProjection> getAllEmployeesPartialResponse(Set<String> fields, int page, int pageSize) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager ->
+                EmployeeRepository.getInstance().getAllEmployeesPartialResponse(entityManager, fields, page, pageSize));
+    }
 
 }

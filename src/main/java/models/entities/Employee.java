@@ -2,7 +2,7 @@ package models.entities;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import models.enums.JobTitle;
 import models.enums.Privilege;
@@ -25,44 +25,69 @@ public class Employee extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotNull(message = "Username cannot be null")
+    @NotEmpty(message = "Username cannot be empty")
     @Column(nullable = false)
+    @Size(min = 3, message = "Username should be at least 3 characters")
     private String username;
 
-    @NotNull(message = "Password cannot be null")
+    @NotEmpty(message = "Password cannot be empty")
     @Column(nullable = false)
+    @Size(min = 6, message = "Password should be at least 6 characters")
     private String password;
 
+    @NotEmpty(message = "First name cannot be empty")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotEmpty(message = "Last name cannot be empty")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Email should be valid")
+    @Column(name ="email",nullable = false, unique = true)
     private String email;
 
+    @NotEmpty(message = "Phone cannot be empty")
+    @Digits(integer = 11, fraction = 0, message = "Phone should be valid")
+    @Column(name ="phone",nullable = false, unique = true)
     private String phone;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "birth_date")
+    @Past(message = "Birth date should be in the past")
     private Date birthDate;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "hire_date")
+    @PastOrPresent(message = "Hire date should be in the past or present")
     private Date hireDate;
 
     @Temporal(TemporalType.DATE)
+    @Column(name = "fire_date")
+    @Past(message = "Fire date should be in the past")
     private Date fireDate;
 
+    @Column(name = "job_title")
     private JobTitle jobTitle;
 
+    @Column(name = "salary")
     private BigDecimal salary;
 
+    @Column(name = "is_hired")
     private Boolean isHired;
 
+    @Column(name = "years_of_experience")
     private Integer yearsOfExperience;
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "privilege")
     private Privilege privilege;
 
+    @Column(name = "vacation_days")
     private Integer vacationDays;
 
+    @Column(name = "deduction")
     private Double deduction;
 
     @Embedded

@@ -2,6 +2,7 @@ package models.entities;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import models.enums.AttendanceStatus;
 
@@ -19,13 +20,22 @@ public class Attendance extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    @Temporal(TemporalType.DATE)
+    @NotNull(message = "Start Date cannot be null")
+    @Column(name = "start_date", nullable = false)
+    private Date startDate;
+
+    @Temporal(TemporalType.DATE)
+    @NotNull(message = "End Date cannot be null")
+    @Column(name = "end_date", nullable = false)
+    private Date endDate;
 
     @ManyToOne
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
     @Enumerated(EnumType.ORDINAL)
+    @NotNull(message = "Status cannot be null")
     private AttendanceStatus status;
 
 }

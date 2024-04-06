@@ -1,37 +1,47 @@
 package models.DTO;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 import models.enums.JobTitle;
 import models.enums.Privilege;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * DTO for {@link models.entities.Employee}
  */
 @EqualsAndHashCode(callSuper = true)
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @XmlRootElement
 public class EmployeeDto extends BaseDTO implements Serializable {
     Long id;
-    @NotNull(message = "Username cannot be null")
     String username;
+    String password;
     String firstName;
     String lastName;
     String email;
     String phone;
-    Date birthDate;
-    Date hireDate;
-    Date fireDate;
-    JobTitle jobTitle;
+
+    @JsonbDateFormat("yyyy-MM-dd")
+    LocalDate birthDate;
+
+    @JsonbDateFormat("yyyy-MM-dd")
+    LocalDate hireDate;
+
+    @JsonbDateFormat("yyyy-MM-dd")
+    LocalDate fireDate;
+
     BigDecimal salary;
     Boolean isHired;
     Integer yearsOfExperience;
     Privilege privilege;
     Integer vacationDays;
+    private JobTitle jobTitle;
+    private Double deduction;
 }
