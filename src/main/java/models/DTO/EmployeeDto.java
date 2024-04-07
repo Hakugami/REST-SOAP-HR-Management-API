@@ -53,42 +53,4 @@ public class EmployeeDto extends BaseDTO implements Serializable {
     JobTitle jobTitle;
     Double deduction;
 
-    @JsonbTransient
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @JsonbTransient
-    public void setHireDate(LocalDate hireDate) {
-        this.hireDate = hireDate;
-    }
-    @JsonbTransient
-    public void setFireDate(LocalDate fireDate) {
-        this.fireDate = fireDate;
-    }
-    @JsonbTransient
-    public void setSalary(BigDecimal salary) {
-        this.salary = salary;
-    }
-    @JsonbTransient
-    public void setHired(Boolean hired) {
-        isHired = hired;
-    }
-    @JsonbTransient
-    public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
-    }
-    @JsonbTransient
-    public void setVacationDays(Integer vacationDays) {
-        this.vacationDays = vacationDays;
-    }
-    @JsonbTransient
-    public void setDeduction(Double deduction) {
-        this.deduction = deduction;
-    }
-
-    @JsonbTransient
-    public String getPassword() {
-        return password;
-    }
 }

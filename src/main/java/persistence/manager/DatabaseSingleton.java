@@ -7,7 +7,6 @@ import org.hibernate.jpa.HibernatePersistenceProvider;
 import persistence.manager.helpers.AutoCloseableEntityManager;
 import utils.PersistenceUnitInfoImpl;
 
-import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -18,7 +17,7 @@ public enum DatabaseSingleton {
     private final EntityManagerFactory entityManagerFactory;
     private final PersistenceUnitInfoImpl persistenceUnitInfo;
 
-    private DatabaseSingleton() {
+    DatabaseSingleton() {
         persistenceUnitInfo = new PersistenceUnitInfoImpl();
         PersistenceProvider persistenceProvider = new HibernatePersistenceProvider();
         entityManagerFactory = persistenceProvider.createContainerEntityManagerFactory(persistenceUnitInfo, persistenceUnitInfo.getProperties());

@@ -92,6 +92,9 @@ public class Employee extends BaseEntity {
     @Column(name = "deduction")
     private Double deduction;
 
+    @Column(name ="salt")
+    private String salt;
+
     @Embedded
     private Address address;
 

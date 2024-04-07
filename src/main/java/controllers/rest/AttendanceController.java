@@ -1,5 +1,6 @@
 package controllers.rest;
 
+import controllers.rest.annotations.Secured;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -7,12 +8,14 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.enums.AttendanceStatus;
+import models.enums.Privilege;
 import services.impl.EmployeeService;
 
 import java.time.LocalTime;
 
 @Slf4j
 @Path("attendance")
+@Secured(value = Privilege.HR)
 public class AttendanceController {
 
     @POST

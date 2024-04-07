@@ -1,5 +1,7 @@
 package controllers.rest.annotations;
 
+import models.enums.Privilege;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -7,4 +9,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Secured { }
+public @interface Secured {
+    Privilege value() default Privilege.EMPLOYEE;
+}

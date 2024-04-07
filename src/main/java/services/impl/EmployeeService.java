@@ -25,16 +25,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
     }
 
 
-    @Override
-    public EmployeeDto save(EmployeeDto employeeDto) {
-        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeMapper.INSTANCE.toEntity(employeeDto);
-            employee.setIsHired(true);
-            employee.setHireDate(new Date());
-            EmployeeRepository.getInstance().create(employee, entityManager);
-            return EmployeeMapper.INSTANCE.toDTO(employee);
-        });
-    }
+
 
     public EmployeeProjection employeePartialResponse(Long id, Set<String> fields) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager ->

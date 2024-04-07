@@ -1,14 +1,16 @@
 package controllers.rest;
 
 import controllers.rest.annotations.Secured;
-import jakarta.annotation.security.DenyAll;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.EmployeeDto;
+import models.enums.Privilege;
 import persistence.repositories.helpers.EmployeeProjection;
+import services.impl.AuthenticationService;
 import services.impl.EmployeeService;
 import utils.ApiUtil;
 
@@ -18,9 +20,11 @@ import java.util.Set;
 
 @Path("employees")
 @Slf4j
+@Secured(value = Privilege.HR)
 public class EmployeeController {
 
     @GET
+    @Secured
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getEmployees(@QueryParam("type") String type, @QueryParam("fields") String fields, @QueryParam("offset") @DefaultValue("0") int offset, @QueryParam("limit") @DefaultValue("10") int limit) {
         Set<String> fieldSet = ApiUtil.getFields(fields);
@@ -65,12 +69,11 @@ public class EmployeeController {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response createEmployee(EmployeeDto employeeDto) {
-        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) ||
-                (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
+    public Response createEmployee(@Valid EmployeeDto employeeDto) {
+        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) || (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
         }
-        EmployeeDto saved = EmployeeService.getInstance().save(employeeDto);
+        EmployeeDto saved = AuthenticationService.getInstance().save(employeeDto);
         return Response.ok(saved).type(MediaType.APPLICATION_JSON).build();
     }
 
@@ -78,9 +81,8 @@ public class EmployeeController {
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateEmployee(@PathParam("id") Long id, EmployeeDto employeeDto) {
-        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) ||
-                (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
+    public Response updateEmployee(@PathParam("id") Long id, @Valid EmployeeDto employeeDto) {
+        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) || (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
         }
         boolean updated = EmployeeService.getInstance().update(employeeDto, id);
