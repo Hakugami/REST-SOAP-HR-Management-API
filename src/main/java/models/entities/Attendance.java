@@ -20,15 +20,11 @@ public class Attendance extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @NotNull(message = "Start Date cannot be null")
-    @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    @Column(name = "AttendanceTime", nullable = false)
+    private Date attendanceTime;
 
-    @Temporal(TemporalType.DATE)
-    @NotNull(message = "End Date cannot be null")
-    @Column(name = "end_date", nullable = false)
-    private Date endDate;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")

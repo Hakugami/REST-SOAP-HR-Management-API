@@ -22,7 +22,7 @@ public class Department extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "manager_id")
-    private Employee manager;
+    private Manager manager;
 
     @OneToMany(mappedBy = "department")
     private Set<Employee> employees = new HashSet<>();

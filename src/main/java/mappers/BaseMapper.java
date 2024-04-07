@@ -33,4 +33,7 @@ public interface BaseMapper<ENTITY extends BaseEntity, DTO extends BaseDTO> {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     ENTITY updateEntity(DTO dto, @MappingTarget ENTITY entity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    DTO updateDTO(ENTITY entity, @MappingTarget DTO dto);
 }

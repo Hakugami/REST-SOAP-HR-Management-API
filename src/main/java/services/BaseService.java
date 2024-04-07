@@ -42,9 +42,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO
 
 
     public boolean delete(ID id) {
-        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            return repository.delete(id, entityManager);
-        });
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> repository.delete(id, entityManager));
     }
 
     public List<DTO> readAll() {

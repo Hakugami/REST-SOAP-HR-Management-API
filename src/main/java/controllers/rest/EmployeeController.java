@@ -1,5 +1,7 @@
 package controllers.rest;
 
+import controllers.rest.annotations.Secured;
+import jakarta.annotation.security.DenyAll;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
@@ -37,10 +39,12 @@ public class EmployeeController {
 
     private Response buildResponse(Object entity, String type) {
         if (entity instanceof EmployeeProjection) {
-            GenericEntity<EmployeeProjection> genericEntity = new GenericEntity<EmployeeProjection>((EmployeeProjection) entity) {};
+            GenericEntity<EmployeeProjection> genericEntity = new GenericEntity<EmployeeProjection>((EmployeeProjection) entity) {
+            };
             return buildResponseWithEntity(genericEntity, type);
         } else if (entity instanceof List) {
-            GenericEntity<List<EmployeeProjection>> genericEntity = new GenericEntity<List<EmployeeProjection>>((List<EmployeeProjection>) entity) {};
+            GenericEntity<List<EmployeeProjection>> genericEntity = new GenericEntity<List<EmployeeProjection>>((List<EmployeeProjection>) entity) {
+            };
             return buildResponseWithEntity(genericEntity, type);
         } else {
             log.error("Invalid entity type: " + entity.getClass().getName());
@@ -62,11 +66,12 @@ public class EmployeeController {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response createEmployee(EmployeeDto employeeDto) {
-        if (employeeDto.getHireDate().isAfter(LocalDate.now()) || employeeDto.getBirthDate().isAfter(LocalDate.now())) {
+        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) ||
+                (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
         }
         EmployeeDto saved = EmployeeService.getInstance().save(employeeDto);
-        return Response.ok(saved).build();
+        return Response.ok(saved).type(MediaType.APPLICATION_JSON).build();
     }
 
     @PUT
@@ -74,7 +79,8 @@ public class EmployeeController {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response updateEmployee(@PathParam("id") Long id, EmployeeDto employeeDto) {
-        if (employeeDto.getHireDate().isAfter(LocalDate.now()) || employeeDto.getBirthDate().isAfter(LocalDate.now())) {
+        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) ||
+                (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
         }
         boolean updated = EmployeeService.getInstance().update(employeeDto, id);
@@ -84,4 +90,17 @@ public class EmployeeController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteEmployee(@PathParam("id") Long id, @QueryParam("isFired") @DefaultValue("false") boolean isFired) {
+        log.info("Deleting employee with id: " + id + " isFired: " + isFired);
+        boolean deleted = EmployeeService.getInstance().delete(id, isFired);
+        if (deleted) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
 }

@@ -30,7 +30,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
 
     public Optional<EmployeeProjection> employeePartialResponse(Long id, EntityManager entityManager, Set<String> fields) {
         try {
-            if(fields.isEmpty()) {
+            if (fields.isEmpty()) {
                 fields = getAllFieldNames();
             }
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -51,7 +51,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
 
     public List<EmployeeProjection> getAllEmployeesPartialResponse(EntityManager entityManager, Set<String> fields, int page, int pageSize) {
         try {
-            if(fields.isEmpty()) {
+            if (fields.isEmpty()) {
                 fields = getAllFieldNames();
             }
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -91,6 +91,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
         }
         return fieldNames;
     }
+
     private EmployeeProjection buildEmployeeProjection(Tuple result, Set<String> fields) {
         EmployeeProjection.Builder builder = new EmployeeProjection.Builder();
         fields.forEach(field -> {
@@ -104,6 +105,45 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
             }
         });
         return builder.build();
+    }
+
+    public Optional<Employee> readByEmail(String email, EntityManager entityManager) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = cb.createQuery(Employee.class);
+            Root<Employee> root = query.from(Employee.class);
+            query.select(root).where(cb.equal(root.get("email"), email));
+            return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
+        } catch (Exception e) {
+            log.error("An error occurred during readByEmail operation: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Employee> readByUsername(String username, EntityManager entityManager) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = cb.createQuery(Employee.class);
+            Root<Employee> root = query.from(Employee.class);
+            query.select(root).where(cb.equal(root.get("username"), username));
+            return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
+        } catch (Exception e) {
+            log.error("An error occurred during readByUsername operation: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Employee> readByPhone(String phone, EntityManager entityManager) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = cb.createQuery(Employee.class);
+            Root<Employee> root = query.from(Employee.class);
+            query.select(root).where(cb.equal(root.get("phone"), phone));
+            return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
+        } catch (Exception e) {
+            log.error("An error occurred during readByPhone operation: " + e.getMessage());
+            return Optional.empty();
+        }
     }
 
     private static class SingletonHelper {

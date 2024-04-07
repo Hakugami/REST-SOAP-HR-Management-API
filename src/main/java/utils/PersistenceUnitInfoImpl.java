@@ -112,7 +112,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
                 "models.entities.Address",
                 "models.entities.Attendance",
                 "models.entities.Project",
-                "models.entities.Department"
+                "models.entities.Department",
+                "models.entities.Manager"
         );
     }
 

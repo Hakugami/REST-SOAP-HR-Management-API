@@ -19,6 +19,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity(name = "employees")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "employee_type")
 public class Employee extends BaseEntity {
 
     @Id
@@ -93,27 +95,24 @@ public class Employee extends BaseEntity {
     @Embedded
     private Address address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Job job;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private Employee manager;
+    private Manager manager;
 
-    @OneToMany(mappedBy = "manager")
-    private Set<Employee> managedEmployees = new HashSet<>();
-
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY)
     private Set<Vacation> vacations = new HashSet<>();
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY)
     private Set<Attendance> attendances = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
