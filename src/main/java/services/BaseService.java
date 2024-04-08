@@ -5,6 +5,7 @@ import models.DTO.BaseDTO;
 import models.entities.BaseEntity;
 import persistence.manager.DatabaseSingleton;
 import persistence.repositories.GenericRepository;
+import persistence.repositories.helpers.filters.AbstractFilter;
 
 import java.util.List;
 
@@ -45,12 +46,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> repository.delete(id, entityManager));
     }
 
-    public List<DTO> readAll() {
+    public <F extends AbstractFilter<ENTITY>> List<DTO> readAll(int offset, int limit, F filter) {
         return (List<DTO>) DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            List<ENTITY> entities = repository.readAll(entityManager);
+            List<ENTITY> entities = repository.readAll(entityManager, offset, limit, filter);
             return mapper.toDTOs(entities);
         });
     }
-
 
 }

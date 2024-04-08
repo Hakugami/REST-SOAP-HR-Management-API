@@ -11,7 +11,7 @@ import models.enums.Privilege;
 import services.impl.AuthenticationService;
 
 @Path("/auth")
-@Secured(value = Privilege.NONE)
+@Secured(value = Privilege.ALL)
 public class AuthenticationController {
 
     @POST

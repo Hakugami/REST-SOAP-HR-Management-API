@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Privilege {
-    NONE(0),
+    ALL(0),
     EMPLOYEE(1),
     HR(2),
     MANAGER(3),
@@ -22,6 +22,6 @@ public enum Privilege {
                 return privilege;
             }
         }
-        return NONE;
+        return ALL;
     }
 }

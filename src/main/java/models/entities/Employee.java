@@ -70,9 +70,6 @@ public class Employee extends BaseEntity {
     @Past(message = "Fire date should be in the past")
     private Date fireDate;
 
-    @Column(name = "job_title")
-    private JobTitle jobTitle;
-
     @Column(name = "salary")
     private BigDecimal salary;
 
@@ -98,24 +95,24 @@ public class Employee extends BaseEntity {
     @Embedded
     private Address address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Job job;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacations = new HashSet<>();
 
-    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Attendance> attendances = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id")
     private Project project;
 

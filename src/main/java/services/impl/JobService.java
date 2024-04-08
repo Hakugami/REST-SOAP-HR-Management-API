@@ -20,8 +20,8 @@ public class JobService extends BaseService<Job, JobDto, Long> {
 
     public JobDto getJobByTitle(JobTitle title) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Job job = JobRepository.getInstance().getJobByTitle(title, entityManager);
-            return JobMapper.INSTANCE.toDTO(job);
+            Job job = JobRepository.getInstance().getJobByTitle(title, entityManager).orElse(null);
+            return job == null ? null : JobMapper.INSTANCE.toDTO(job);
         });
     }
 

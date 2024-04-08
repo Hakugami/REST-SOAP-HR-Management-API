@@ -38,16 +38,17 @@ public class SecurityFilter implements ContainerRequestFilter {
         Method method = resourceInfo.getResourceMethod();
         Class<?> resourceClass = resourceInfo.getResourceClass();
 
-        Privilege requiredPrivilege = Privilege.NONE; // default privilege
+        Privilege requiredPrivilege = Privilege.ALL; // default privilege
 
+        if (resourceClass.isAnnotationPresent(Secured.class)) {
+            requiredPrivilege = resourceClass.getAnnotation(Secured.class).value();
+        }
         if (method.isAnnotationPresent(Secured.class)) {
             requiredPrivilege = method.getAnnotation(Secured.class).value();
-        } else if (resourceClass.isAnnotationPresent(Secured.class)) {
-            requiredPrivilege = resourceClass.getAnnotation(Secured.class).value();
         }
 
         // If the required privilege is NONE, allow the request to proceed without checking the JWT token
-        if (requiredPrivilege == Privilege.NONE) {
+        if (requiredPrivilege == Privilege.ALL) {
             return;
         }
 
@@ -67,7 +68,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             } else {
                 Privilege tokenPrivilege = Privilege.valueOf(claimsSet.getClaim("privileges").toString());
                 log.info("Token privilege: {}", tokenPrivilege);
-                if (tokenPrivilege.compareTo(requiredPrivilege) < 1) {
+                if (tokenPrivilege.compareTo(requiredPrivilege) < 0) {
                     redirectToLogin(requestContext);
                 }
             }

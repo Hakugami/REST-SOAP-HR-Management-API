@@ -9,6 +9,8 @@ import models.entities.Job;
 import models.enums.JobTitle;
 import persistence.repositories.GenericRepository;
 
+import java.util.Optional;
+
 
 @Slf4j
 public class JobRepository extends GenericRepository<Job, Long> {
@@ -21,16 +23,16 @@ public class JobRepository extends GenericRepository<Job, Long> {
         return SingletonHelper.INSTANCE;
     }
 
-    public Job getJobByTitle(JobTitle title, EntityManager entityManager) {
+    public Optional<Job> getJobByTitle(JobTitle title, EntityManager entityManager) {
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Job> query = cb.createQuery(Job.class);
             Root<Job> root = query.from(Job.class);
             query.select(root).where(cb.equal(root.get("title"), title));
-            return entityManager.createQuery(query).getSingleResult();
+            return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
         } catch (Exception e) {
             log.error("An error occurred during getJobByTitle operation: {}", e.getMessage());
-            return null;
+            return Optional.empty();
         }
     }
 

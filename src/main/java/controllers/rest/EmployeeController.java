@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.EmployeeDto;
 import models.enums.Privilege;
-import persistence.repositories.helpers.EmployeeProjection;
+import persistence.repositories.helpers.projections.EmployeeProjection;
 import services.impl.AuthenticationService;
 import services.impl.EmployeeService;
 import utils.ApiUtil;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Path("employees")
 @Slf4j
-@Secured(value = Privilege.HR)
+@Secured(value = Privilege.ALL)
 public class EmployeeController {
 
     @GET
@@ -28,6 +28,7 @@ public class EmployeeController {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getEmployees(@QueryParam("type") String type, @QueryParam("fields") String fields, @QueryParam("offset") @DefaultValue("0") int offset, @QueryParam("limit") @DefaultValue("10") int limit) {
         Set<String> fieldSet = ApiUtil.getFields(fields);
+        log.info("Fields: {}", fieldSet);
         List<EmployeeProjection> employees = EmployeeService.getInstance().getAllEmployeesPartialResponse(fieldSet, offset, limit);
         return buildResponse(employees, type);
     }
@@ -37,6 +38,7 @@ public class EmployeeController {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getEmployeePartialResponse(@PathParam("id") Long id, @QueryParam("fields") String fields, @QueryParam("type") String type) {
         Set<String> fieldSet = ApiUtil.getFields(fields);
+        log.info("Fields: {}", fieldSet);
         EmployeeProjection employee = EmployeeService.getInstance().employeePartialResponse(id, fieldSet);
         return buildResponse(employee, type);
     }
@@ -81,24 +83,37 @@ public class EmployeeController {
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateEmployee(@PathParam("id") Long id, @Valid EmployeeDto employeeDto) {
-        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) || (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
-        }
-        boolean updated = EmployeeService.getInstance().update(employeeDto, id);
-        if (updated) {
+    public Response updateEmployee(@PathParam("id") Long id,  EmployeeDto employeeDto) {
+        return getResponse(id, employeeDto);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteEmployee(@PathParam("id") Long id, @QueryParam("isFired") @DefaultValue("false") boolean isFired) {
+        log.info("Deleting employee with id: {} isFired: {}", id, isFired);
+        boolean deleted = EmployeeService.getInstance().delete(id, isFired);
+        if (deleted) {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
-    @DELETE
+
+    @PATCH
     @Path("/{id}")
-    public Response deleteEmployee(@PathParam("id") Long id, @QueryParam("isFired") @DefaultValue("false") boolean isFired) {
-        log.info("Deleting employee with id: " + id + " isFired: " + isFired);
-        boolean deleted = EmployeeService.getInstance().delete(id, isFired);
-        if (deleted) {
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response partialUpdateEmployee(@PathParam("id") Long id, @Valid EmployeeDto employeeDto) {
+        return getResponse(id, employeeDto);
+    }
+
+    private Response getResponse(Long id, EmployeeDto employeeDto) {
+        if ((employeeDto.getHireDate() != null && employeeDto.getHireDate().isAfter(LocalDate.now())) || (employeeDto.getBirthDate() != null && employeeDto.getBirthDate().isAfter(LocalDate.now()))) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Hire date and birth date should be in the past or present").build();
+        }
+        boolean updated = EmployeeService.getInstance().update(employeeDto, id);
+        if (updated) {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

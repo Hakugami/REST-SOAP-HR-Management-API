@@ -1,15 +1,31 @@
 package services;
 
 import lombok.extern.slf4j.Slf4j;
-import services.impl.EmployeeService;
-import utils.ApiUtil;
+import models.entities.Job;
+import models.enums.JobTitle;
+import persistence.manager.DatabaseSingleton;
+import persistence.repositories.impl.JobRepository;
 
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class DummyMain {
     public static void main(String[] args) {
-        Set<String> fields = ApiUtil.getFields("phone,email,jobTitle,salary,isHired");
-        log.info(String.valueOf(EmployeeService.getInstance().employeePartialResponse(102L, fields)));
+        List<Job> jobs = new ArrayList<>();
+
+        for (JobTitle title : JobTitle.values()) {
+            Job job = new Job();
+            job.setTitle(title);
+            job.setStartingSalary(BigDecimal.valueOf(title.getMinSalary()));
+            job.setMaxSalary(BigDecimal.valueOf(title.getMaxSalary()));
+            job.setMinExperience(title.getRequiredExperience());
+            job.setDescription(title.getDescription());
+            jobs.add(job);
+        }
+
+
     }
+
 }

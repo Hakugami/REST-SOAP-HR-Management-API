@@ -1,28 +1,39 @@
 package controllers.rest;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import controllers.rest.annotations.Secured;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.enums.AttendanceStatus;
 import models.enums.Privilege;
 import services.impl.EmployeeService;
+import utils.ApiUtil;
 
 import java.time.LocalTime;
 
 @Slf4j
 @Path("attendance")
-@Secured(value = Privilege.HR)
+@Secured(value = Privilege.EMPLOYEE)
 public class AttendanceController {
+
+    @Context
+    private ContainerRequestContext requestContext;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response markAttendance(String email) {
-        if (email == null || email.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Email is required").build();
+    public Response markAttendance() {
+        JWTClaimsSet claimsSet = ApiUtil.getClaimsSet(requestContext,Privilege.EMPLOYEE);
+        String email;
+        if (claimsSet != null) {
+            email = claimsSet.getClaim("email").toString();
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized").build();
         }
 
         AttendanceStatus attendanceStatus = determineAttendanceStatus();

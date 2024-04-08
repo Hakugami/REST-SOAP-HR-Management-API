@@ -1,11 +1,13 @@
-package persistence.repositories.helpers;
+package persistence.repositories.helpers.projections;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.ToString;
-import models.enums.JobTitle;
+import mappers.JobMapper;
+import models.DTO.JobDto;
+import models.entities.Job;
 
 import java.math.BigDecimal;
 
@@ -19,7 +21,7 @@ public class EmployeeProjection {
     private String lastName;
     private String email;
     private String phone;
-    private JobTitle jobTitle;
+    private JobDto job;
     private BigDecimal salary;
     private Boolean isHired;
     private String birthDate;
@@ -32,7 +34,7 @@ public class EmployeeProjection {
         private String lastName;
         private String email;
         private String phone;
-        private JobTitle jobTitle;
+        private JobDto job;
         private BigDecimal salary;
         private Boolean isHired;
         private String birthDate;
@@ -66,8 +68,8 @@ public class EmployeeProjection {
             return this;
         }
 
-        public Builder jobTitle(JobTitle jobTitle) {
-            this.jobTitle = jobTitle;
+        public Builder job(Job job) {
+            this.job = JobMapper.INSTANCE.toDTO(job);
             return this;
         }
 
@@ -103,7 +105,7 @@ public class EmployeeProjection {
             employeeProjection.lastName = this.lastName;
             employeeProjection.email = this.email;
             employeeProjection.phone = this.phone;
-            employeeProjection.jobTitle = this.jobTitle;
+            employeeProjection.job = this.job;
             employeeProjection.salary = this.salary;
             employeeProjection.isHired = this.isHired;
             employeeProjection.birthDate = this.birthDate;

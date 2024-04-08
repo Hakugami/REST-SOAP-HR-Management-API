@@ -10,7 +10,7 @@ import jakarta.persistence.criteria.Selection;
 import lombok.extern.slf4j.Slf4j;
 import models.entities.Employee;
 import persistence.repositories.GenericRepository;
-import persistence.repositories.helpers.EmployeeProjection;
+import persistence.repositories.helpers.projections.EmployeeProjection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +33,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
             if (fields.isEmpty()) {
                 fields = getAllFieldNames();
             }
+            log.info("Fields: {}", fields);
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Tuple> query = cb.createTupleQuery();
             Root<Employee> root = query.from(Employee.class);
@@ -54,6 +55,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
             if (fields.isEmpty()) {
                 fields = getAllFieldNames();
             }
+            log.info("Fields: {}", fields);
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Tuple> query = cb.createTupleQuery();
             Root<Employee> root = query.from(Employee.class);
@@ -76,7 +78,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
 
             return projections;
         } catch (Exception e) {
-            log.error("An error occurred during getAllEmployeesPartialResponse operation: " + e.getMessage());
+            log.error("An error occurred during getAllEmployeesPartialResponse operation: {}", e.getMessage());
             return Collections.emptyList();
         }
     }

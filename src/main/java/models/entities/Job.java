@@ -2,7 +2,7 @@ package models.entities;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import models.enums.JobTitle;
@@ -17,12 +17,12 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity(name = "jobs")
-public class Job extends BaseEntity{
+public class Job extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotEmpty(message = "Name cannot be empty")
+    @NotNull(message = "Name cannot be null")
     @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private JobTitle title;
