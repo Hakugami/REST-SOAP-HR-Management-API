@@ -25,7 +25,10 @@ public class DummyMain {
             jobs.add(job);
         }
 
-
+        DatabaseSingleton.INSTANCE.doInTransaction(entityManager -> {
+            JobRepository jobRepository = JobRepository.getInstance();
+            jobs.forEach(job -> jobRepository.create(job, entityManager));
+        });
     }
 
 }

@@ -1,10 +1,8 @@
-package controllers.rest;
+package controllers.rest.resources.attendence;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import controllers.rest.annotations.Secured;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -12,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.enums.AttendanceStatus;
 import models.enums.Privilege;
+import controllers.rest.beans.PaginationBean;
 import services.impl.EmployeeService;
 import utils.ApiUtil;
 
@@ -28,7 +27,7 @@ public class AttendanceController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response markAttendance() {
-        JWTClaimsSet claimsSet = ApiUtil.getClaimsSet(requestContext,Privilege.EMPLOYEE);
+        JWTClaimsSet claimsSet = ApiUtil.getClaimsSet(requestContext, Privilege.EMPLOYEE);
         String email;
         if (claimsSet != null) {
             email = claimsSet.getClaim("email").toString();
@@ -64,5 +63,11 @@ public class AttendanceController {
         } else {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An error occurred while marking attendance").build();
         }
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getAttendance(@BeanParam PaginationBean paginationBean, @QueryParam("type") String type){
+        return Response.ok(EmployeeService.getInstance().readAll(paginationBean.getOffset(), paginationBean.getLimit(), null)).build();
     }
 }

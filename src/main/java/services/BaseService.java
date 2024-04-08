@@ -53,4 +53,14 @@ public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO
         });
     }
 
+    public long count() {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(repository::count);
+    }
+
+    public <F extends AbstractFilter<ENTITY>> long count(F filter) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> repository.count(entityManager, filter));
+    }
+
+
+
 }

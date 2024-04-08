@@ -1,4 +1,4 @@
-package controllers.rest.helpers;
+package controllers.rest.helpers.adaptors;
 
 import jakarta.json.bind.serializer.DeserializationContext;
 import jakarta.json.bind.serializer.JsonbDeserializer;

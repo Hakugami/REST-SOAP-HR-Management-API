@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Address implements Serializable {
+public class Address extends BaseEntity {
     private String street;
     private String city;
     private String state;

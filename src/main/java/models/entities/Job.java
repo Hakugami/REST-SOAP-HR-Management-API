@@ -23,7 +23,7 @@ public class Job extends BaseEntity {
     private Long id;
 
     @NotNull(message = "Name cannot be null")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobTitle title;
 
@@ -40,6 +40,9 @@ public class Job extends BaseEntity {
     @Column(name = "min_experience")
     @PositiveOrZero(message = "Min experience should be positive or zero")
     private Integer minExperience;
+
+    @Column(name = "available")
+    private Boolean available;
 
     @OneToMany(mappedBy = "job")
     private Set<Employee> employees = new HashSet<>();

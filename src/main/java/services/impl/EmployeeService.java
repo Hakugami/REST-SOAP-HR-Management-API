@@ -61,15 +61,15 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
             if (employee == null) {
                 return false;
             }
-            if (dto.getJobTitle() != JobTitle.ENTRY_LEVEL) {
-                log.error("Job title cannot be changed");
-                Job job = JobRepository.getInstance().getJobByTitle(dto.getJobTitle(), entityManager).orElse(null);
-                if (job == null) {
-                    log.error("Job not found");
-                    return false;
-                }
-                employee.setJob(job);
-            }
+//            if (dto.getJobTitle() != JobTitle.ENTRY_LEVEL) {
+//                log.error("Job title cannot be changed");
+//                Job job = JobRepository.getInstance().getJobByTitle(dto.getJobTitle(), entityManager).orElse(null);
+//                if (job == null) {
+//                    log.error("Job not found");
+//                    return false;
+//                }
+//                employee.setJob(job);
+//            }
             Employee updatedEmployee = EmployeeMapper.INSTANCE.updateEntity(dto, employee);
             return EmployeeRepository.getInstance().update(updatedEmployee, entityManager);
         });

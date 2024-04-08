@@ -9,7 +9,8 @@ public enum JobTitle {
     DEVELOPER("Developer", 2000, 3000, 2, "Developer position"),
     SENIOR_DEVELOPER("Senior Developer", 3000, 4000, 3, "Senior developer position"),
     HR("HR", 2000, 3000, 2, "Human resources position"),
-    MANAGER("Manager", 4000, 5000, 5, "Manager position"),;
+    MANAGER("Manager", 4000, 5000, 5, "Manager position"),
+    CEO("CEO", 10000, 20000, 10, "CEO position");
 
     private final String title;
     private final int minSalary;

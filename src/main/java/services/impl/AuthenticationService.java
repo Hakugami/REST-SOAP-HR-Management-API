@@ -3,8 +3,10 @@ package services.impl;
 import mappers.EmployeeMapper;
 import models.DTO.EmployeeDto;
 import models.entities.Employee;
+import models.enums.JobTitle;
 import persistence.manager.DatabaseSingleton;
 import persistence.repositories.impl.EmployeeRepository;
+import persistence.repositories.impl.JobRepository;
 import services.BaseService;
 import utils.HashingUtil;
 import utils.JWTUtil;
@@ -20,7 +22,22 @@ public class AuthenticationService extends BaseService<Employee, EmployeeDto, Lo
     }
 
     public static AuthenticationService getInstance() {
-        return AuthenticationService.SingletonHelper.INSTANCE;
+        return SingletonHelper.INSTANCE;
+    }
+
+    private static JobTitle getJobTitle(Employee employee) {
+        JobTitle jobTitle = JobTitle.ENTRY_LEVEL;
+        int yearsOfExperience = employee.getYearsOfExperience();
+        if (yearsOfExperience < 1) {
+            jobTitle = JobTitle.ENTRY_LEVEL;
+        } else if (yearsOfExperience < 2) {
+            jobTitle = JobTitle.JUNIOR_DEVELOPER;
+        } else if (yearsOfExperience < 3) {
+            jobTitle = JobTitle.DEVELOPER;
+        } else if (yearsOfExperience < 5) {
+            jobTitle = JobTitle.SENIOR_DEVELOPER;
+        }
+        return jobTitle;
     }
 
     public String login(String username, String password) {
@@ -47,6 +64,13 @@ public class AuthenticationService extends BaseService<Employee, EmployeeDto, Lo
             employee.setHireDate(new Date());
             employee.setSalt(salt);
             employee.setPassword(password);
+
+            // Determine JobTitle based on years of experience
+            JobTitle jobTitle = getJobTitle(employee);
+
+            // Retrieve Job entity and set to Employee
+            JobRepository.getInstance().getJobByTitle(jobTitle, entityManager).ifPresent(employee::setJob);
+
             EmployeeRepository.getInstance().create(employee, entityManager);
             return EmployeeMapper.INSTANCE.toDTO(employee);
         });

@@ -4,7 +4,6 @@ package models.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import models.enums.JobTitle;
 import models.enums.Privilege;
 
 import java.math.BigDecimal;
@@ -76,7 +75,8 @@ public class Employee extends BaseEntity {
     @Column(name = "is_hired")
     private Boolean isHired;
 
-    @Column(name = "years_of_experience")
+    @NotNull(message = "Years of experience cannot be null")
+    @Column(name = "years_of_experience", nullable = false)
     private Integer yearsOfExperience;
 
     @Enumerated(EnumType.ORDINAL)

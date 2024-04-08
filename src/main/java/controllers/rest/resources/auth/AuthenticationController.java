@@ -1,4 +1,4 @@
-package controllers.rest;
+package controllers.rest.resources.auth;
 
 import controllers.rest.annotations.Secured;
 import jakarta.ws.rs.Consumes;

@@ -97,4 +97,36 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
         }
     }
 
+    public long count(EntityManager entityManager) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<T> rootEntry = cq.from(entityClass);
+            cq.select(cb.count(rootEntry));
+            return entityManager.createQuery(cq).getSingleResult();
+        } catch (Exception e) {
+            log.error("An error occurred during count operation: {}", e.getMessage());
+            return 0;
+        }
+    }
+
+    public long count(EntityManager entityManager, AbstractFilter<T> filter) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<T> rootEntry = cq.from(entityClass);
+            cq.select(cb.count(rootEntry));
+            if (filter != null) {
+                Predicate predicate = filter.toPredicateConjunction(cb, rootEntry);
+                if (predicate != null) {
+                    cq.where(predicate);
+                }
+            }
+            return entityManager.createQuery(cq).getSingleResult();
+        } catch (Exception e) {
+            log.error("An error occurred during count operation: {}", e.getMessage());
+            return 0;
+        }
+    }
+
 }

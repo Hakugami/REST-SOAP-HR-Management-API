@@ -9,13 +9,15 @@ import mappers.JobMapper;
 import models.DTO.JobDto;
 import models.entities.Job;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @ToString
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EmployeeProjection {
+public class EmployeeProjection implements Serializable {
+    private Long id;
     private String username;
     private String firstName;
     private String lastName;
@@ -28,7 +30,9 @@ public class EmployeeProjection {
     private String hireDate;
     private String fireDate;
 
+
     public static class Builder {
+        private Long id;
         private String username;
         private String firstName;
         private String lastName;
@@ -38,10 +42,13 @@ public class EmployeeProjection {
         private BigDecimal salary;
         private Boolean isHired;
         private String birthDate;
-
         private String hireDate;
-
         private String fireDate;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder username(String username) {
             this.username = username;
@@ -100,6 +107,7 @@ public class EmployeeProjection {
 
         public EmployeeProjection build() {
             EmployeeProjection employeeProjection = new EmployeeProjection();
+            employeeProjection.id = this.id;
             employeeProjection.username = this.username;
             employeeProjection.firstName = this.firstName;
             employeeProjection.lastName = this.lastName;
