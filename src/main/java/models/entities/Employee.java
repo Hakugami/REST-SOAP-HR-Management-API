@@ -1,6 +1,5 @@
 package models.entities;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -11,15 +10,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity(name = "employees")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "employee_type")
 public class Employee extends BaseEntity {
 
     @Id
@@ -46,12 +42,12 @@ public class Employee extends BaseEntity {
 
     @NotEmpty(message = "Email cannot be empty")
     @Email(message = "Email should be valid")
-    @Column(name ="email",nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotEmpty(message = "Phone cannot be empty")
     @Digits(integer = 11, fraction = 0, message = "Phone should be valid")
-    @Column(name ="phone",nullable = false, unique = true)
+    @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
     @Temporal(TemporalType.DATE)
@@ -89,7 +85,7 @@ public class Employee extends BaseEntity {
     @Column(name = "deduction")
     private Double deduction;
 
-    @Column(name ="salt")
+    @Column(name = "salt")
     private String salt;
 
     @Embedded
@@ -98,22 +94,37 @@ public class Employee extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Job job;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
-
-    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Vacation> vacations = new HashSet<>();
 
-    @OneToMany(mappedBy = "employee" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Attendance> attendances = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
+
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Employee> managedEmployees = new HashSet<>();
+
+    @OneToOne(mappedBy = "manager", optional = true, cascade = CascadeType.ALL)
+    private Department managedDepartment;
+
+    public void addManagedEmployee(Employee employee) {
+        managedEmployees.add(employee);
+        employee.setManager(this);
+    }
+
+    public void removeManagedEmployee(Employee employee) {
+        managedEmployees.remove(employee);
+        employee.setManager(null);
+    }
 }

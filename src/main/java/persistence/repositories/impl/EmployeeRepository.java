@@ -3,10 +3,7 @@ package persistence.repositories.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import models.entities.Employee;
 import persistence.repositories.GenericRepository;
@@ -17,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
 public class EmployeeRepository extends GenericRepository<Employee, Long> {
@@ -32,6 +30,9 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
         try {
             if (fields.isEmpty()) {
                 fields = getAllFieldNames();
+            }else if (!fields.contains("id")) {
+                fields = new CopyOnWriteArraySet<>(fields);
+                fields.add("id");
             }
             log.info("Fields: {}", fields);
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -54,6 +55,9 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
         try {
             if (fields.isEmpty()) {
                 fields = getAllFieldNames();
+            }else if (!fields.contains("id")) {
+                fields = new CopyOnWriteArraySet<>(fields);
+                fields.add("id");
             }
             log.info("Fields: {}", fields);
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -64,19 +68,7 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
             query.multiselect(selections.toArray(new Selection[0]));
 
             // Pagination
-            int offset = page * pageSize;
-            TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
-            typedQuery.setFirstResult(offset);
-            typedQuery.setMaxResults(pageSize);
-
-            List<Tuple> results = typedQuery.getResultList();
-            List<EmployeeProjection> projections = new ArrayList<>();
-
-            for (Tuple result : results) {
-                projections.add(buildEmployeeProjection(result, fields));
-            }
-
-            return projections;
+            return getEmployeeProjections(entityManager, fields, page, pageSize, query);
         } catch (Exception e) {
             log.error("An error occurred during getAllEmployeesPartialResponse operation: {}", e.getMessage());
             return Collections.emptyList();
@@ -143,10 +135,81 @@ public class EmployeeRepository extends GenericRepository<Employee, Long> {
             query.select(root).where(cb.equal(root.get("phone"), phone));
             return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
         } catch (Exception e) {
-            log.error("An error occurred during readByPhone operation: " + e.getMessage());
+            log.error("An error occurred during readByPhone operation: {}", e.getMessage());
             return Optional.empty();
         }
     }
+
+    public List<EmployeeProjection> getAllManagersPartialResponse(EntityManager entityManager, Set<String> fields, int page, int pageSize) {
+        try {
+            if (fields.isEmpty()) {
+                fields = getAllFieldNames();
+            }else if (!fields.contains("id")) {
+                fields = new CopyOnWriteArraySet<>(fields);
+                fields.add("id");
+            }
+            log.info("Fields: {}", fields);
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tuple> query = cb.createTupleQuery();
+            Root<Employee> root = query.from(Employee.class);
+            List<Selection<?>> selections = new ArrayList<>();
+            fields.forEach(field -> selections.add(root.get(field).alias(field)));
+            query.multiselect(selections.toArray(new Selection[0]));
+
+            Predicate managerPredicate = cb.isNotNull(root.get("managedDepartment"));
+            query.where(managerPredicate);
+
+            // Pagination
+            return getEmployeeProjections(entityManager, fields, page, pageSize, query);
+        } catch (Exception e) {
+            log.error("An error occurred during getAllManagersPartialResponse operation: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public EmployeeProjection getManagerPartialResponse(Long id, EntityManager entityManager, Set<String> fields) {
+        try {
+            if (fields.isEmpty()) {
+                fields = getAllFieldNames();
+            }else if (!fields.contains("id")) {
+                fields = new CopyOnWriteArraySet<>(fields);
+                fields.add("id");
+            }
+            log.info("Fields: {}", fields);
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tuple> query = cb.createTupleQuery();
+            Root<Employee> root = query.from(Employee.class);
+            List<Selection<?>> selections = new ArrayList<>();
+            fields.forEach(field -> selections.add(root.get(field).alias(field)));
+            query.multiselect(selections.toArray(new Selection[0]));
+            Predicate managerPredicate = cb.isNotNull(root.get("managedDepartment"));
+            query.where(cb.and(cb.equal(root.get("id"), id), managerPredicate));
+            Tuple result = entityManager.createQuery(query).getSingleResult();
+
+            return buildEmployeeProjection(result, fields);
+        } catch (Exception e) {
+            log.error("An error occurred during getManagerPartialResponse operation: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private List<EmployeeProjection> getEmployeeProjections(EntityManager entityManager, Set<String> fields, int page, int pageSize, CriteriaQuery<Tuple> query) {
+        int offset = page * pageSize;
+        TypedQuery<Tuple> typedQuery = entityManager.createQuery(query);
+        typedQuery.setFirstResult(offset);
+        typedQuery.setMaxResults(pageSize);
+
+        List<Tuple> results = typedQuery.getResultList();
+        List<EmployeeProjection> projections = new ArrayList<>();
+
+        for (Tuple result : results) {
+            projections.add(buildEmployeeProjection(result, fields));
+        }
+
+        return projections;
+    }
+
+
 
     private static class SingletonHelper {
         private static final EmployeeRepository INSTANCE = new EmployeeRepository();

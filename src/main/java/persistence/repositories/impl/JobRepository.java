@@ -1,6 +1,7 @@
 package persistence.repositories.impl;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -25,11 +26,14 @@ public class JobRepository extends GenericRepository<Job, Long> {
 
     public Optional<Job> getJobByTitle(JobTitle title, EntityManager entityManager) {
         try {
+            log.info("Getting job by title: {}", title);
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Job> query = cb.createQuery(Job.class);
             Root<Job> root = query.from(Job.class);
             query.select(root).where(cb.equal(root.get("title"), title));
             return Optional.ofNullable(entityManager.createQuery(query).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
         } catch (Exception e) {
             log.error("An error occurred during getJobByTitle operation: {}", e.getMessage());
             return Optional.empty();

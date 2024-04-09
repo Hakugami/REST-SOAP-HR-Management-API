@@ -25,6 +25,15 @@ public class JobService extends BaseService<Job, JobDto, Long> {
         });
     }
 
+    @Override
+    public boolean delete(Long aLong) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
+            Job job = repository.read(aLong, entityManager);
+            job.setAvailable(false);
+            return repository.update(job, entityManager);
+        });
+    }
+
     private static class SingletonHelper {
         private static final JobService INSTANCE = new JobService();
     }

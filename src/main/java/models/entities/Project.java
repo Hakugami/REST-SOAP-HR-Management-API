@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity(name = "projects")
-public class Project extends BaseEntity{
+public class Project extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -43,6 +43,6 @@ public class Project extends BaseEntity{
     @NotEmpty(message = "Client name cannot be empty")
     private String clientName;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Employee> employees;
 }

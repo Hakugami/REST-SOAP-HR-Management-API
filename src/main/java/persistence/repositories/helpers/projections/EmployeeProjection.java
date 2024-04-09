@@ -5,8 +5,14 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.ToString;
+import mappers.DepartmentMapper;
+import mappers.EmployeeMapper;
 import mappers.JobMapper;
+import models.DTO.DepartmentDto;
+import models.DTO.EmployeeDto;
 import models.DTO.JobDto;
+import models.entities.Department;
+import models.entities.Employee;
 import models.entities.Job;
 
 import java.io.Serializable;
@@ -31,6 +37,8 @@ public class EmployeeProjection implements Serializable {
     private String fireDate;
 
 
+
+
     public static class Builder {
         private Long id;
         private String username;
@@ -44,6 +52,7 @@ public class EmployeeProjection implements Serializable {
         private String birthDate;
         private String hireDate;
         private String fireDate;
+
 
         public Builder id(Long id) {
             this.id = id;
@@ -104,6 +113,7 @@ public class EmployeeProjection implements Serializable {
             this.fireDate = fireDate != null ? fireDate.toString() : null;
             return this;
         }
+
 
         public EmployeeProjection build() {
             EmployeeProjection employeeProjection = new EmployeeProjection();

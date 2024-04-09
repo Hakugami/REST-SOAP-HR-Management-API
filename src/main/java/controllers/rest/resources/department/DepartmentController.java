@@ -1,11 +1,16 @@
 package controllers.rest.resources.department;
 
 import controllers.rest.beans.PaginationBean;
+import controllers.rest.exceptions.custom.ResourceNotFoundException;
 import controllers.rest.helpers.utils.RestUtil;
+import controllers.rest.resources.employee.EmployeeController;
+import controllers.rest.resources.employee.EmployeeResponse;
+import controllers.rest.resources.employee.EmployeeResponseWrapper;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.DepartmentDto;
+import persistence.repositories.helpers.projections.EmployeeProjection;
 import services.impl.DepartmentService;
 
 import java.net.URI;
@@ -55,13 +60,16 @@ public class DepartmentController {
         log.info("Getting department...");
         try {
             DepartmentDto department = DepartmentService.getInstance().read(id);
+            if (department == null) {
+                throw new ResourceNotFoundException("Department not found", 404, "https://www.example.com/errors/404");
+            }
             DepartmentResponse departmentResponse = new DepartmentResponse();
             departmentResponse.setDepartmentDto(department);
             departmentResponse.addLink(RestUtil.createSelfLink(uriInfo, id, DepartmentController.class));
             return buildResponse(departmentResponse, type);
         } catch (Exception e) {
             log.error("Exception occurred while getting department", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while getting department").build();
+            return new WebApplicationException(new ResourceNotFoundException("Exception occurred while getting department", 500, "https://www.example.com/errors/500")).getResponse();
         }
     }
 
@@ -165,6 +173,57 @@ public class DepartmentController {
         } catch (Exception e) {
             log.error("Exception occurred while deleting department", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while deleting department").build();
+        }
+    }
+
+    @PATCH
+    @Path("{dId}/manager/{mId}")
+    public Response assignManager(@PathParam("dId") Long departmentId, @PathParam("mId") Long managerId) {
+        log.info("Assigning manager to department...");
+        try {
+            boolean assigned = DepartmentService.getInstance().updateManager(departmentId, managerId);
+            if (!assigned) {
+                log.error("Manager not assigned to department");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Manager not assigned to department").build();
+            } else {
+                log.info("Manager assigned to department");
+                return Response.ok("Manager assigned successfully").build();
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while assigning manager to department", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while assigning manager to department").build();
+        }
+    }
+
+    @GET
+    @Path("{id}/employees")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getEmployees(@PathParam("id") Long id, @BeanParam PaginationBean paginationBean , @QueryParam("type") String type){
+        log.info("Getting employees of department...");
+        try {
+            List<EmployeeProjection> employees = DepartmentService.getInstance().getEmployees(id, paginationBean.getOffset(), paginationBean.getLimit());
+            EmployeeResponseWrapper employeeResponseWrapper = new EmployeeResponseWrapper();
+            for (EmployeeProjection employee : employees) {
+                EmployeeResponse employeeResponse = new EmployeeResponse();
+                employeeResponse.setEmployee(employee);
+                employeeResponse.addLink(RestUtil.createSelfLink(uriInfo, employee.getId(), EmployeeController.class));
+                employeeResponseWrapper.getEmployees().add(employeeResponse);
+            }
+            for(Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, DepartmentService.getInstance().countEmployees(id))) {
+                employeeResponseWrapper.addLink(link);
+            }
+            return buildResponse(employeeResponseWrapper, type);
+        } catch (Exception e) {
+            log.error("Exception occurred while getting employees of department", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while getting employees of department").build();
+        }
+    }
+
+    private Response buildResponse(EmployeeResponseWrapper employeeResponseWrapper, String type) {
+        if (type != null && type.equals("xml")) {
+            return Response.ok(employeeResponseWrapper).type(MediaType.APPLICATION_XML).build();
+        } else {
+            return Response.ok(employeeResponseWrapper).type(MediaType.APPLICATION_JSON).build();
         }
     }
 }

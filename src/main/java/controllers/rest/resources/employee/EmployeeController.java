@@ -123,7 +123,7 @@ public class EmployeeController {
         log.info("Deleting employee with id: {} isFired: {}", id, isFired);
         boolean deleted = EmployeeService.getInstance().delete(id, isFired);
         if (deleted) {
-            return Response.ok().build();
+            return Response.ok("Employee left the company").build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -144,9 +144,46 @@ public class EmployeeController {
         }
         boolean updated = EmployeeService.getInstance().update(employeeDto, id);
         if (updated) {
-            return Response.ok().build();
+            Link selfLink = RestUtil.createSelfLink(uriInfo, id, EmployeeController.class);
+            return Response.ok("Updated Successfully").links(selfLink).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+
+    @PUT
+    @Path("/{eid}/manager/{mid}")
+    public Response assignManager(@PathParam("eid") Long employeeId, @PathParam("mid") Long managerId) {
+        try {
+            log.info("Assigning manager with id: {} to employee with id: {}", managerId, employeeId);
+            boolean assigned = EmployeeService.getInstance().assignManager(employeeId, managerId);
+            if (!assigned) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Failed to assign manager").build();
+            } else {
+                Link selfLink = RestUtil.createSelfLink(uriInfo, employeeId, EmployeeController.class);
+                return Response.ok("Updated Successfully").links(selfLink).build();
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while assigning manager", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while assigning manager").build();
+        }
+    }
+
+
+    @GET
+    @Path("{id}/manager")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getManager(@PathParam("id") Long id, @QueryParam("type") String type) {
+        log.info("Getting manager for employee with id: {}", id);
+        EmployeeProjection manager = EmployeeService.getInstance().getManager(id);
+        if (manager == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Manager not found").build();
+        } else {
+            EmployeeResponse employeeResponse = new EmployeeResponse();
+            employeeResponse.setEmployee(manager);
+            employeeResponse.addLink(RestUtil.createSelfLink(uriInfo, id, EmployeeController.class));
+            return buildResponse(employeeResponse, type);
         }
     }
 

@@ -1,10 +1,13 @@
 package services.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import mappers.EmployeeMapper;
 import models.DTO.EmployeeDto;
+import models.entities.Department;
 import models.entities.Employee;
 import models.enums.JobTitle;
 import persistence.manager.DatabaseSingleton;
+import persistence.repositories.impl.DepartmentRepository;
 import persistence.repositories.impl.EmployeeRepository;
 import persistence.repositories.impl.JobRepository;
 import services.BaseService;
@@ -13,6 +16,7 @@ import utils.JWTUtil;
 
 import java.util.Date;
 
+@Slf4j
 public class AuthenticationService extends BaseService<Employee, EmployeeDto, Long> {
     private final JWTUtil jwtUtil;
 
@@ -26,19 +30,24 @@ public class AuthenticationService extends BaseService<Employee, EmployeeDto, Lo
     }
 
     private static JobTitle getJobTitle(Employee employee) {
-        JobTitle jobTitle = JobTitle.ENTRY_LEVEL;
         int yearsOfExperience = employee.getYearsOfExperience();
+        log.info("Years of experience: {}", yearsOfExperience);
+
         if (yearsOfExperience < 1) {
-            jobTitle = JobTitle.ENTRY_LEVEL;
+            return JobTitle.ENTRY_LEVEL;
         } else if (yearsOfExperience < 2) {
-            jobTitle = JobTitle.JUNIOR_DEVELOPER;
+            return JobTitle.JUNIOR_DEVELOPER;
         } else if (yearsOfExperience < 3) {
-            jobTitle = JobTitle.DEVELOPER;
+            return JobTitle.DEVELOPER;
         } else if (yearsOfExperience < 5) {
-            jobTitle = JobTitle.SENIOR_DEVELOPER;
+            return JobTitle.SENIOR_DEVELOPER;
+        } else if (yearsOfExperience < 10) {
+            return JobTitle.MANAGER;
+        } else {
+            return JobTitle.CEO;
         }
-        return jobTitle;
     }
+
 
     public String login(String username, String password) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
@@ -64,12 +73,24 @@ public class AuthenticationService extends BaseService<Employee, EmployeeDto, Lo
             employee.setHireDate(new Date());
             employee.setSalt(salt);
             employee.setPassword(password);
-
+            if (employeeDto.getDepartmentId() != null) {
+                Department department = DepartmentRepository.getInstance().read(employeeDto.getDepartmentId(), entityManager);
+                employee.setDepartment(department);
+                employee.setManager(department.getManager());
+            } else if (employeeDto.getDepartmentName() != null) {
+                Department department = DepartmentRepository.getInstance().findByName(employeeDto.getDepartmentName(), entityManager);
+                employee.setDepartment(department);
+                employee.setDepartment(department);
+                employee.setManager(department.getManager());
+            }
             // Determine JobTitle based on years of experience
             JobTitle jobTitle = getJobTitle(employee);
 
             // Retrieve Job entity and set to Employee
-            JobRepository.getInstance().getJobByTitle(jobTitle, entityManager).ifPresent(employee::setJob);
+            JobRepository.getInstance().getJobByTitle(jobTitle, entityManager).ifPresent(job -> {
+                log.info("Job found: {}", job.getTitle());
+                employee.setJob(job);
+            });
 
             EmployeeRepository.getInstance().create(employee, entityManager);
             return EmployeeMapper.INSTANCE.toDTO(employee);

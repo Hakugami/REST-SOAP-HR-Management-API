@@ -24,9 +24,9 @@ public class Department extends BaseEntity {
 
     private Boolean active;
 
-    @OneToOne
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id" )
+    private Employee manager;
 
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Employee> employees = new HashSet<>();
@@ -51,7 +51,7 @@ public class Department extends BaseEntity {
         employee.setDepartment(null);
     }
 
-    public void setManager(Manager manager) {
+    public void setManager(Employee manager) {
         this.manager = manager;
         manager.setDepartment(this);
     }

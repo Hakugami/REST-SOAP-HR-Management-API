@@ -144,6 +144,26 @@ public class JobController {
         }
     }
 
+    @DELETE
+    @Path("/{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response deleteJob(@PathParam("id") Long id) {
+        log.info("Deleting job with id: {}...", id);
+        try {
+            boolean deletedJob = JobService.getInstance().delete(id);
+            if (!deletedJob) {
+                log.error("Failed to delete job");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to delete job").build();
+            } else {
+                log.info("Job deleted successfully");
+                return Response.ok().build();
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while deleting job", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while deleting job").build();
+        }
+    }
+
     private Response getResponse(Long id, JobDto jobDto) {
         Link jobLink = RestUtil.createSelfLink(uriInfo, id, JobController.class);
 

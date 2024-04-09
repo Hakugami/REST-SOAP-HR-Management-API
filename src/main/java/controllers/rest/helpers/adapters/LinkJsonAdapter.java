@@ -1,4 +1,4 @@
-package controllers.rest.helpers.adaptors;
+package controllers.rest.helpers.adapters;
 
 import controllers.rest.beans.AdaptedLink;
 import jakarta.json.bind.adapter.JsonbAdapter;

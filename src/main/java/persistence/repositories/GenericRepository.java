@@ -23,7 +23,7 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
             entityManager.persist(t);
             return true;
         } catch (Exception e) {
-            log.error("An error occurred during create operation: " + e.getMessage());
+            log.error("An error occurred during create operation: {}", e.getMessage());
             return false;
         }
     }
@@ -32,7 +32,7 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
         try {
             return entityManager.find(entityClass, id);
         } catch (Exception e) {
-            log.error("An error occurred during read operation: " + e.getMessage());
+            log.error("An error occurred during read operation: {}", e.getMessage());
             return null;
         }
     }
@@ -42,7 +42,7 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
             entityManager.merge(t);
             return true;
         } catch (Exception e) {
-            log.error("An error occurred during update operation: " + e.getMessage());
+            log.error("An error occurred during update operation: {}", e.getMessage());
             return false;
         }
     }

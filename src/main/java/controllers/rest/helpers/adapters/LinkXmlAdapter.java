@@ -1,4 +1,4 @@
-package controllers.rest.helpers.adaptors;
+package controllers.rest.helpers.adapters;
 
 import jakarta.ws.rs.core.Link;
 import jakarta.xml.bind.annotation.XmlAttribute;

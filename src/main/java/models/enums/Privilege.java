@@ -8,7 +8,8 @@ public enum Privilege {
     EMPLOYEE(1),
     HR(2),
     MANAGER(3),
-    CEO(4);
+    CEO(4),
+    DEVELOPER(5);
 
     private final int level;
 

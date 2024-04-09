@@ -1,7 +1,7 @@
 package controllers.rest.resources.job;
 
-import controllers.rest.helpers.adaptors.LinkJsonAdapter;
-import controllers.rest.helpers.adaptors.LinkXmlAdapter;
+import controllers.rest.helpers.adapters.LinkJsonAdapter;
+import controllers.rest.helpers.adapters.LinkXmlAdapter;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.ws.rs.core.Link;

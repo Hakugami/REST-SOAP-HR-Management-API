@@ -1,7 +1,8 @@
-package controllers.rest.resources.employee;
+package controllers.rest.resources.project;
 
 import controllers.rest.helpers.adapters.LinkJsonAdapter;
 import controllers.rest.helpers.adapters.LinkXmlAdapter;
+import controllers.rest.resources.project.ProjectResponse;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.ws.rs.core.Link;
@@ -11,19 +12,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "employees")
+@XmlRootElement(name = "jobs")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeResponseWrapper implements Serializable {
-
-    @XmlElement(name = "employee")
-    private List<EmployeeResponse> employees = new ArrayList<>();
+public class ProjectResponseWrapper {
+    private List<ProjectResponse> projects = new ArrayList<>();
 
     @XmlElementWrapper(name = "links")
     @XmlElement(name = "link")

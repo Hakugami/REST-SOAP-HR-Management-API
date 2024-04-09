@@ -1,5 +1,6 @@
 package models.DTO;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
+@XmlRootElement
 public class DepartmentDto extends BaseDTO implements Serializable {
     Long id;
     String name;

@@ -1,18 +1,16 @@
 package services.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import mappers.DtoMapper;
 import mappers.EmployeeMapper;
 import models.DTO.EmployeeDto;
 import models.entities.Attendance;
 import models.entities.Employee;
-import models.entities.Job;
 import models.enums.AttendanceStatus;
-import models.enums.JobTitle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import models.enums.Privilege;
 import persistence.manager.DatabaseSingleton;
 import persistence.repositories.helpers.projections.EmployeeProjection;
 import persistence.repositories.impl.EmployeeRepository;
-import persistence.repositories.impl.JobRepository;
 import services.BaseService;
 
 import java.math.BigDecimal;
@@ -20,8 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
-    private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     protected EmployeeService() {
         super(EmployeeRepository.getInstance(), EmployeeMapper.INSTANCE);
@@ -54,6 +52,26 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
         });
     }
 
+    public boolean assignManager(Long employeeId, Long managerId) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
+            log.info("Employee ID: {}", employeeId);
+            Employee employee = EmployeeRepository.getInstance().read(employeeId, entityManager);
+            if (employee == null) {
+                log.info("Employee is null");
+                return false;
+            }
+            log.info("Manager ID: {}", managerId);
+            Employee manager = EmployeeRepository.getInstance().read(managerId, entityManager);
+            if (manager == null) {
+                log.info("Manager is null");
+                return false;
+            }
+            log.info("Manager: {}", manager.getFirstName());
+            employee.setManager(manager);
+            return EmployeeRepository.getInstance().update(employee, entityManager);
+        });
+    }
+
     @Override
     public boolean update(EmployeeDto dto, Long aLong) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
@@ -61,15 +79,6 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
             if (employee == null) {
                 return false;
             }
-//            if (dto.getJobTitle() != JobTitle.ENTRY_LEVEL) {
-//                log.error("Job title cannot be changed");
-//                Job job = JobRepository.getInstance().getJobByTitle(dto.getJobTitle(), entityManager).orElse(null);
-//                if (job == null) {
-//                    log.error("Job not found");
-//                    return false;
-//                }
-//                employee.setJob(job);
-//            }
             Employee updatedEmployee = EmployeeMapper.INSTANCE.updateEntity(dto, employee);
             return EmployeeRepository.getInstance().update(updatedEmployee, entityManager);
         });
@@ -81,6 +90,11 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
             if (employee == null) {
                 return false;
             }
+            employee.setManager(null);
+            employee.setDepartment(null);
+            employee.setPrivilege(Privilege.ALL);
+            employee.setSalary(BigDecimal.ZERO);
+
             employee.setIsHired(false);
             if (isFired) {
                 employee.setFireDate(new Date());
@@ -114,6 +128,22 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
             }
             return EmployeeRepository.getInstance().update(employee, entityManager);
         });
+    }
+
+    public EmployeeProjection getManager(Long id) {
+        return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
+            Employee employee = EmployeeRepository.getInstance().read(id, entityManager);
+            if (employee == null) {
+                return null;
+            }
+            Employee manager = employee.getManager();
+            if (manager == null) {
+                return null;
+            }
+            return DtoMapper.INSTANCE.employeeDtoToEmployee(EmployeeMapper.INSTANCE.toDTO(manager));
+        });
+
+
     }
 
     private static class SingletonHelper {

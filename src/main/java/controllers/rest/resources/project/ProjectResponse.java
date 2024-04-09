@@ -1,4 +1,5 @@
-package controllers.rest.resources.employee;
+package controllers.rest.resources.project;
+
 
 import controllers.rest.helpers.adapters.LinkJsonAdapter;
 import controllers.rest.helpers.adapters.LinkXmlAdapter;
@@ -10,20 +11,18 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import models.DTO.ProjectDto;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "employees")
+@XmlRootElement(name = "project")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeResponseWrapper implements Serializable {
-
-    @XmlElement(name = "employee")
-    private List<EmployeeResponse> employees = new ArrayList<>();
+public class ProjectResponse {
+    private ProjectDto projectDto;
 
     @XmlElementWrapper(name = "links")
     @XmlElement(name = "link")
@@ -32,11 +31,10 @@ public class EmployeeResponseWrapper implements Serializable {
     private List<Link> xmlLinks = new ArrayList<>();
 
     @JsonbTypeAdapter(LinkJsonAdapter.class)
-    private List<Link> links = new ArrayList<>();
+    private List<Link> links = new ArrayList<>(); // Field for JSON representation
 
     public void addLink(Link link) {
         this.xmlLinks.add(link);
         this.links.add(link);
     }
-
 }

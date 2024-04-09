@@ -1,12 +1,15 @@
 package models.DTO;
 
-import controllers.rest.helpers.adaptors.LocalDateDeserializer;
+import controllers.rest.helpers.adapters.LocalDateDeserializer;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.validation.constraints.*;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
+import models.enums.JobTitle;
+import models.enums.Privilege;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -43,6 +46,7 @@ public class EmployeeDto extends BaseDTO implements Serializable {
 
     @JsonbDateFormat("yyyy-MM-dd")
     @JsonbTypeDeserializer(LocalDateDeserializer.class)
+    @Past(message = "Birth date should be in the past")
     LocalDate birthDate;
 
     @JsonbDateFormat("yyyy-MM-dd")
@@ -61,5 +65,16 @@ public class EmployeeDto extends BaseDTO implements Serializable {
     Double deduction;
 
     AddressDto address;
+
+    @XmlEnumValue("jobTitle")
+    JobTitle jobTitle;
+
+    @XmlEnumValue("privilege")
+    Privilege privilege;
+
+
+    String departmentName;
+    @NotNull(message = "Department ID cannot be null")
+    Long departmentId;
 
 }

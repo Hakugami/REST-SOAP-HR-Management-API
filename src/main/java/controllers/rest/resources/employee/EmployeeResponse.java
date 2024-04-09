@@ -1,7 +1,7 @@
 package controllers.rest.resources.employee;
 
-import controllers.rest.helpers.adaptors.LinkJsonAdapter;
-import controllers.rest.helpers.adaptors.LinkXmlAdapter;
+import controllers.rest.helpers.adapters.LinkJsonAdapter;
+import controllers.rest.helpers.adapters.LinkXmlAdapter;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.ws.rs.core.Link;
@@ -10,6 +10,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import models.DTO.EmployeeDto;
 import persistence.repositories.helpers.projections.EmployeeProjection;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ import java.util.List;
 public class EmployeeResponse implements Serializable {
 
     private EmployeeProjection employee;
+    private EmployeeDto employeeDto;
 
     @XmlElementWrapper(name = "links")
     @XmlElement(name = "link")

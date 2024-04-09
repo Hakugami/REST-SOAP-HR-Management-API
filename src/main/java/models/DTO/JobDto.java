@@ -2,8 +2,6 @@ package models.DTO;
 
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
@@ -18,7 +16,7 @@ import java.math.BigDecimal;
 @Builder
 @XmlRootElement
 @JsonbNillable
-public class JobDto extends BaseDTO{
+public class JobDto extends BaseDTO {
     Long id;
     @XmlEnumValue(value = "title")
     JobTitle title;
