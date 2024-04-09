@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 @XmlRootElement
 @JsonbNillable
 public class JobDto extends BaseDTO{
+    Long id;
     @XmlEnumValue(value = "title")
     JobTitle title;
     String description;
@@ -28,4 +29,5 @@ public class JobDto extends BaseDTO{
     BigDecimal maxSalary;
     @PositiveOrZero(message = "Min experience should be positive or zero")
     Integer minExperience;
+    Boolean available;
 }

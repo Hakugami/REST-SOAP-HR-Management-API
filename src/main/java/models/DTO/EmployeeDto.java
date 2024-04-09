@@ -7,8 +7,6 @@ import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.validation.constraints.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
-import models.enums.JobTitle;
-import models.enums.Privilege;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,7 +23,6 @@ import java.time.LocalDate;
 @XmlRootElement
 @JsonbNillable
 public class EmployeeDto extends BaseDTO implements Serializable {
-    Long id;
 
     @Size(min = 3, message = "Username should be at least 3 characters")
     @NotEmpty(message = "Username cannot be empty")
@@ -55,13 +52,10 @@ public class EmployeeDto extends BaseDTO implements Serializable {
     @JsonbDateFormat("yyyy-MM-dd")
     @JsonbTypeDeserializer(LocalDateDeserializer.class)
     LocalDate fireDate;
-
     BigDecimal salary;
     Boolean isHired;
-
     @NotNull(message = "Years of experience cannot be null")
     Integer yearsOfExperience;
-
 
     Integer vacationDays;
     Double deduction;

@@ -25,7 +25,6 @@ public class Attendance extends BaseEntity {
     @Column(name = "AttendanceTime", nullable = false)
     private Date attendanceTime;
 
-
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
@@ -34,4 +33,13 @@ public class Attendance extends BaseEntity {
     @NotNull(message = "Status cannot be null")
     private AttendanceStatus status;
 
+    @Transient
+    private String employeeName;
+
+    @PostLoad
+    private void postLoad() {
+        if (employee != null) {
+            employeeName = employee.getFirstName() + " " + employee.getLastName();
+        }
+    }
 }

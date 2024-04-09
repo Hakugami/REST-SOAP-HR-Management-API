@@ -1,20 +1,25 @@
 package controllers.rest.resources.job;
 
 import controllers.rest.annotations.Secured;
+import controllers.rest.beans.PaginationBean;
+import controllers.rest.helpers.utils.RestUtil;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.GenericEntity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.JobDto;
 import models.enums.Privilege;
 import persistence.repositories.helpers.filters.JobFilter;
 import services.impl.JobService;
 
+import java.net.URI;
+import java.util.List;
+
 @Slf4j
 @Path("jobs")
 @Secured(value = Privilege.ALL)
 public class JobController {
+    @Context
+    private UriInfo uriInfo;
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -29,9 +34,16 @@ public class JobController {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to create job").build();
             } else {
                 log.info("Job created successfully");
-                GenericEntity<JobDto> entity = new GenericEntity<>(createdJob) {
+                URI jobUri = RestUtil.getCreatedAtUriForPost(uriInfo, createdJob.getId());
+                Link jobLink = Link.fromUri(jobUri).rel("self").build();
+
+                JobResponse jobResponse = new JobResponse();
+                jobResponse.setJobDto(createdJob);
+                jobResponse.addLink(jobLink);
+
+                GenericEntity<JobResponse> entity = new GenericEntity<>(jobResponse) {
                 };
-                return Response.ok(entity).build();
+                return Response.created(jobUri).entity(entity).build();
             }
         } catch (Exception e) {
             log.error("Exception occurred while creating job", e);
@@ -41,15 +53,52 @@ public class JobController {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getJobs(@QueryParam("offset") @DefaultValue("0") int offset,
-                            @QueryParam("limit") @DefaultValue("10") int limit,
-                            @BeanParam JobFilter filter) {
+    public Response getJobs(@BeanParam PaginationBean paginationBean,
+                            @BeanParam JobFilter filter, @QueryParam("type") String type) {
         log.info("Getting all jobs...");
-        try {
-            return Response.ok(JobService.getInstance().readAll(offset, limit, filter)).build();
-        } catch (Exception e) {
-            log.error("Exception occurred while getting all jobs", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while getting all jobs").build();
+        List<JobDto> jobs = JobService.getInstance().readAll(paginationBean.getOffset(), paginationBean.getLimit(), filter);
+        JobResponseWrapper jobResponseWrapper = new JobResponseWrapper();
+        for (JobDto job : jobs) {
+            JobResponse jobResponse = new JobResponse();
+            jobResponse.setJobDto(job);
+            jobResponse.addLink(RestUtil.createSelfLink(uriInfo, job.getId(), JobController.class));
+            jobResponseWrapper.getJobs().add(jobResponse);
+        }
+        for (Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, JobService.getInstance().count())) {
+            jobResponseWrapper.addLink(link);
+        }
+        return buildResponse(jobResponseWrapper, type);
+    }
+
+    private Response buildResponse(JobResponseWrapper jobResponseWrapper, String type) {
+        GenericEntity<JobResponseWrapper> entity = new GenericEntity<>(jobResponseWrapper) {
+        };
+        if (type != null && type.equals("xml")) {
+            return Response.ok(entity, MediaType.APPLICATION_XML).build();
+        } else {
+            return Response.ok(entity, MediaType.APPLICATION_JSON).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getJob(@PathParam("id") Long id, @QueryParam("type") String type) {
+        log.info("Getting job with id: {}...", id);
+        JobDto job = JobService.getInstance().read(id);
+        JobResponse jobResponse = new JobResponse();
+        jobResponse.setJobDto(job);
+        jobResponse.addLink(RestUtil.createSelfLink(uriInfo, id, JobController.class));
+        return buildResponse(jobResponse, type);
+    }
+
+    private Response buildResponse(JobResponse jobResponse, String type) {
+        GenericEntity<JobResponse> entity = new GenericEntity<>(jobResponse) {
+        };
+        if (type != null && type.equals("xml")) {
+            return Response.ok(entity, MediaType.APPLICATION_XML).build();
+        } else {
+            return Response.ok(entity, MediaType.APPLICATION_JSON).build();
         }
     }
 
@@ -60,15 +109,13 @@ public class JobController {
     public Response updateJob(@PathParam("id") Long id, JobDto jobDto) {
         log.info("Updating job with id: {}...", id);
         try {
-            boolean result = JobService.getInstance().update(jobDto, id);
-            if (!result) {
+            boolean updatedJob = JobService.getInstance().update(jobDto, id);
+            if (!updatedJob) {
                 log.error("Failed to update job");
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update job").build();
             } else {
                 log.info("Job updated successfully");
-                GenericEntity<Boolean> entity = new GenericEntity<>(true) {
-                };
-                return Response.ok(entity).build();
+                return getResponse(id, jobDto);
             }
         } catch (Exception e) {
             log.error("Exception occurred while updating job", e);
@@ -76,30 +123,38 @@ public class JobController {
         }
     }
 
-
     @PATCH
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response partialUpdateJob(@PathParam("id") Long id, JobDto jobDto) {
-        log.info("Partially updating job with id: {}...", id);
+        log.info("Patching job with id: {}...", id);
         try {
-            boolean result = JobService.getInstance().update(jobDto, id);
-            if (!result) {
-                log.error("Failed to partially update job");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to partially update job").build();
+            boolean updatedJob = JobService.getInstance().update(jobDto, id);
+            if (!updatedJob) {
+                log.error("Failed to patch job");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to patch job").build();
             } else {
-                log.info("Job partially updated successfully");
-                GenericEntity<Boolean> entity = new GenericEntity<>(true) {
-                };
-                return Response.ok(entity).build();
+                log.info("Job patched successfully");
+                return getResponse(id, jobDto);
             }
         } catch (Exception e) {
-            log.error("Exception occurred while partially updating job", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while partially updating job").build();
+            log.error("Exception occurred while patching job", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while patching job").build();
         }
     }
 
+    private Response getResponse(Long id, JobDto jobDto) {
+        Link jobLink = RestUtil.createSelfLink(uriInfo, id, JobController.class);
+
+        JobResponse jobResponse = new JobResponse();
+        jobResponse.setJobDto(jobDto);
+        jobResponse.addLink(jobLink);
+
+        GenericEntity<JobResponse> entity = new GenericEntity<>(jobResponse) {
+        };
+        return Response.ok(entity).build();
+    }
 
 
 }

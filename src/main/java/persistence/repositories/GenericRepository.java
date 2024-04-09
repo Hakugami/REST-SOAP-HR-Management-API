@@ -68,6 +68,21 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
         }
     }
 
+    public List<T> readAll(EntityManager entityManager, int page, int pageSize) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(entityClass);
+            Root<T> rootEntry = cq.from(entityClass);
+            CriteriaQuery<T> all = cq.select(rootEntry);
+            TypedQuery<T> allQuery = entityManager.createQuery(all);
+            allQuery.setFirstResult(page * pageSize);
+            allQuery.setMaxResults(pageSize);
+            return allQuery.getResultList();
+        } catch (Exception e) {
+            log.error("An error occurred during readAll operation: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 
     public <F extends AbstractFilter<T>> List<T> readAll(EntityManager entityManager, int page, int pageSize, F filter) {
         try {
