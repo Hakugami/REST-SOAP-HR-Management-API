@@ -12,6 +12,10 @@ public class AttendanceService extends BaseService<Attendance, AttendanceDto, Lo
         super(AttendanceRepository.getInstance(), AttendanceMapper.INSTANCE);
     }
 
+    public static AttendanceService getInstance() {
+        return AttendanceService.SingletonHelper.INSTANCE;
+    }
+
     private static class SingletonHelper {
         private static final AttendanceService INSTANCE = new AttendanceService();
     }

@@ -28,7 +28,10 @@ public class JobService extends BaseService<Job, JobDto, Long> {
     @Override
     public boolean delete(Long aLong) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Job job = repository.read(aLong, entityManager);
+            Job job = repository.read(aLong, entityManager).orElse(null);
+            if(job==null){
+                return false;
+            }
             job.setAvailable(false);
             return repository.update(job, entityManager);
         });

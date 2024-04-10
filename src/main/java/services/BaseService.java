@@ -29,14 +29,17 @@ public abstract class BaseService<ENTITY extends BaseEntity, DTO extends BaseDTO
 
     public DTO read(ID id) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            ENTITY entity = repository.read(id, entityManager);
+            ENTITY entity = repository.read(id, entityManager).orElse(null);
+            if (entity == null) {
+                return null;
+            }
             return mapper.toDTO(entity);
         });
     }
 
     public boolean update(DTO dto, ID id) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            ENTITY entity = mapper.updateEntity(dto, repository.read(id, entityManager));
+            ENTITY entity = mapper.updateEntity(dto, repository.read(id, entityManager).orElse(null));
             return repository.update(entity, entityManager);
         });
     }

@@ -2,6 +2,7 @@ package controllers.rest.resources.project;
 
 import controllers.rest.beans.PaginationBean;
 import controllers.rest.helpers.utils.RestUtil;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import services.impl.ProjectService;
 import java.net.URI;
 import java.util.List;
 
-@Path("project")
+@Path("projects")
 @Slf4j
 public class ProjectController {
     @Context
@@ -33,7 +34,7 @@ public class ProjectController {
         for (Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, ProjectService.getInstance().count())) {
             projectResponseWrapper.addLink(link);
         }
-        return buildResponse(projectResponseWrapper,type);
+        return buildResponse(projectResponseWrapper, type);
     }
 
     private Response buildResponse(ProjectResponseWrapper projectResponseWrapper, String type) {
@@ -92,13 +93,13 @@ public class ProjectController {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response updateProject(@PathParam("id") Long id, ProjectDto projectDto) {
+    public Response updateProject(@PathParam("id") Long id, @Valid ProjectDto projectDto) {
         log.info("Updating project with id: {}", id);
-        boolean updatedProject = ProjectService.getInstance().update(projectDto,id);
+        boolean updatedProject = ProjectService.getInstance().update(projectDto, id);
         if (!updatedProject) {
             log.error("Failed to update project");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to update project").build();
-        }else {
+        } else {
             log.info("Project updated successfully");
             return getProject(id, projectDto);
         }
@@ -121,7 +122,7 @@ public class ProjectController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to delete project").build();
         } else {
             log.info("Project deleted successfully");
-            return Response.noContent().build();
+            return Response.ok().build();
         }
     }
 
@@ -137,6 +138,31 @@ public class ProjectController {
         } else {
             log.info("Project patched successfully");
             return getProject(id, projectDto);
+        }
+    }
+
+
+    @PATCH
+    @Path("{id}/employees/{employeeId}")
+    public Response assignEmployeeToProject(@PathParam("id") Long projectId, @PathParam("employeeId") Long employeeId) {
+        return getResponse(projectId, employeeId);
+    }
+
+    @PUT
+    @Path("{id}/employees/{employeeId}")
+    public Response assignEmployeeToProjectPut(@PathParam("id") Long projectId, @PathParam("employeeId") Long employeeId) {
+        return getResponse(projectId, employeeId);
+    }
+
+    private Response getResponse( Long projectId,  Long employeeId) {
+        log.info("Assigning employee with id: {} to project with id: {}", employeeId, projectId);
+        boolean assignedEmployee = ProjectService.getInstance().assignEmployeeToProject(projectId, employeeId);
+        if (!assignedEmployee) {
+            log.error("Failed to assign employee to project");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to assign employee to project").build();
+        } else {
+            log.info("Employee assigned to project successfully");
+            return Response.ok("Employee assigned to project successfully").build();
         }
     }
 

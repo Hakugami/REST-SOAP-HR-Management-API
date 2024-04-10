@@ -35,7 +35,7 @@ public class DepartmentController {
                 departmentResponse.addLink(RestUtil.createSelfLink(uriInfo, department.getId(), DepartmentController.class));
                 departmentResponseWrapper.getDepartments().add(departmentResponse);
             }
-            for(Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, DepartmentService.getInstance().count())) {
+            for (Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, DepartmentService.getInstance().count())) {
                 departmentResponseWrapper.addLink(link);
             }
             return buildResponse(departmentResponseWrapper, type);
@@ -179,6 +179,10 @@ public class DepartmentController {
     @PATCH
     @Path("{dId}/manager/{mId}")
     public Response assignManager(@PathParam("dId") Long departmentId, @PathParam("mId") Long managerId) {
+        return getResponse(departmentId, managerId);
+    }
+
+    private Response getResponse(Long departmentId, Long managerId) {
         log.info("Assigning manager to department...");
         try {
             boolean assigned = DepartmentService.getInstance().updateManager(departmentId, managerId);
@@ -195,10 +199,17 @@ public class DepartmentController {
         }
     }
 
+    @PUT
+    @Path("{dId}/manager/{mId}")
+    public Response assignManagerPut(@PathParam("dId") Long departmentId, @PathParam("mId") Long managerId) {
+        return getResponse(departmentId, managerId);
+    }
+
+
     @GET
     @Path("{id}/employees")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getEmployees(@PathParam("id") Long id, @BeanParam PaginationBean paginationBean , @QueryParam("type") String type){
+    public Response getEmployees(@PathParam("id") Long id, @BeanParam PaginationBean paginationBean, @QueryParam("type") String type) {
         log.info("Getting employees of department...");
         try {
             List<EmployeeProjection> employees = DepartmentService.getInstance().getEmployees(id, paginationBean.getOffset(), paginationBean.getLimit());
@@ -209,7 +220,7 @@ public class DepartmentController {
                 employeeResponse.addLink(RestUtil.createSelfLink(uriInfo, employee.getId(), EmployeeController.class));
                 employeeResponseWrapper.getEmployees().add(employeeResponse);
             }
-            for(Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, DepartmentService.getInstance().countEmployees(id))) {
+            for (Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, DepartmentService.getInstance().countEmployees(id))) {
                 employeeResponseWrapper.addLink(link);
             }
             return buildResponse(employeeResponseWrapper, type);

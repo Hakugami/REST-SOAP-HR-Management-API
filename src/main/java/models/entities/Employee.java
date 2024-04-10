@@ -23,7 +23,7 @@ public class Employee extends BaseEntity {
     private Long id;
 
     @NotEmpty(message = "Username cannot be empty")
-    @Column(nullable = false)
+    @Column(nullable = false , unique = true)
     @Size(min = 3, message = "Username should be at least 3 characters")
     private String username;
 
@@ -78,9 +78,6 @@ public class Employee extends BaseEntity {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "privilege")
     private Privilege privilege;
-
-    @Column(name = "vacation_days")
-    private Integer vacationDays;
 
     @Column(name = "deduction")
     private Double deduction;

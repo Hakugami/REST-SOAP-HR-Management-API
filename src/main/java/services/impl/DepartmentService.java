@@ -25,8 +25,11 @@ public class DepartmentService extends BaseService<Department, DepartmentDto, Lo
 
     public boolean updateManager(Long departmentId, Long managerId) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Department department = repository.read(departmentId, entityManager);
+            Department department = repository.read(departmentId, entityManager).orElse(null);
             Employee manager = entityManager.find(Employee.class, managerId);
+            if (department==null){
+                return false;
+            }
             department.setManager(manager);
             return repository.update(department, entityManager);
         });
@@ -42,9 +45,11 @@ public class DepartmentService extends BaseService<Department, DepartmentDto, Lo
     @Override
     public boolean delete(Long aLong) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Department department = repository.read(aLong, entityManager);
-            department.removeManager();
-            department.setActive(false);
+            Department department = repository.read(aLong, entityManager).orElse(null);
+            if (department!=null) {
+                department.removeManager();
+                department.setActive(false);
+            }
             repository.update(department, entityManager);
             return repository.delete(aLong, entityManager);
         });

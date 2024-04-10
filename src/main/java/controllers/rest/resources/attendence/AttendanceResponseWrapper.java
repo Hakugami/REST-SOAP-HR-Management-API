@@ -1,8 +1,8 @@
-package controllers.rest.resources.project;
+package controllers.rest.resources.attendence;
+
 
 import controllers.rest.helpers.adapters.LinkJsonAdapter;
 import controllers.rest.helpers.adapters.LinkXmlAdapter;
-import controllers.rest.resources.project.ProjectResponse;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbTypeAdapter;
 import jakarta.ws.rs.core.Link;
@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "jobs")
+@XmlRootElement(name = "attendances")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectResponseWrapper {
+public class AttendanceResponseWrapper {
 
-    private List<ProjectResponse> projects = new ArrayList<>();
+    private List<AttendanceResponse> attendances = new ArrayList<>();
 
     @XmlElementWrapper(name = "links")
     @XmlElement(name = "link")
@@ -37,5 +37,4 @@ public class ProjectResponseWrapper {
         this.xmlLinks.add(link);
         this.links.add(link);
     }
-
 }

@@ -37,4 +37,9 @@ public class Vacation extends BaseEntity {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+        employee.getVacations().add(this);
+    }
+
 }

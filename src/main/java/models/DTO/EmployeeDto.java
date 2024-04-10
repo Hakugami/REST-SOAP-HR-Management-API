@@ -1,6 +1,6 @@
 package models.DTO;
 
-import controllers.rest.helpers.adapters.LocalDateDeserializer;
+//import controllers.rest.helpers.adapters.LocalDateDeserializer;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbTypeDeserializer;
@@ -45,16 +45,16 @@ public class EmployeeDto extends BaseDTO implements Serializable {
     String phone;
 
     @JsonbDateFormat("yyyy-MM-dd")
-    @JsonbTypeDeserializer(LocalDateDeserializer.class)
+//    @JsonbTypeDeserializer(LocalDateDeserializer.class)
     @Past(message = "Birth date should be in the past")
     LocalDate birthDate;
 
     @JsonbDateFormat("yyyy-MM-dd")
-    @JsonbTypeDeserializer(LocalDateDeserializer.class)
+//    @JsonbTypeDeserializer(LocalDateDeserializer.class)
     LocalDate hireDate;
 
     @JsonbDateFormat("yyyy-MM-dd")
-    @JsonbTypeDeserializer(LocalDateDeserializer.class)
+//    @JsonbTypeDeserializer(LocalDateDeserializer.class)
     LocalDate fireDate;
     BigDecimal salary;
     Boolean isHired;

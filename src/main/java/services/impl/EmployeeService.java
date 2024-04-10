@@ -42,7 +42,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public boolean hire(Long id) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(id, entityManager);
+            Employee employee = EmployeeRepository.getInstance().read(id, entityManager).orElse(null);
             if (employee == null) {
                 return false;
             }
@@ -55,13 +55,13 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
     public boolean assignManager(Long employeeId, Long managerId) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
             log.info("Employee ID: {}", employeeId);
-            Employee employee = EmployeeRepository.getInstance().read(employeeId, entityManager);
+            Employee employee = EmployeeRepository.getInstance().read(employeeId, entityManager).orElse(null);
             if (employee == null) {
                 log.info("Employee is null");
                 return false;
             }
             log.info("Manager ID: {}", managerId);
-            Employee manager = EmployeeRepository.getInstance().read(managerId, entityManager);
+            Employee manager = EmployeeRepository.getInstance().read(managerId, entityManager).orElse(null);
             if (manager == null) {
                 log.info("Manager is null");
                 return false;
@@ -75,7 +75,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
     @Override
     public boolean update(EmployeeDto dto, Long aLong) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager);
+            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElse(null);
             if (employee == null) {
                 return false;
             }
@@ -86,12 +86,11 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public boolean delete(Long aLong, boolean isFired) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager);
+            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElse(null);
             if (employee == null) {
                 return false;
             }
             employee.setManager(null);
-            employee.setDepartment(null);
             employee.setPrivilege(Privilege.ALL);
             employee.setSalary(BigDecimal.ZERO);
 
@@ -132,7 +131,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public EmployeeProjection getManager(Long id) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(id, entityManager);
+            Employee employee = EmployeeRepository.getInstance().read(id, entityManager).orElse(null);
             if (employee == null) {
                 return null;
             }

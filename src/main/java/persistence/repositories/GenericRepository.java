@@ -9,6 +9,7 @@ import persistence.repositories.helpers.filters.AbstractFilter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public abstract class GenericRepository<T extends BaseEntity, ID> {
@@ -28,12 +29,12 @@ public abstract class GenericRepository<T extends BaseEntity, ID> {
         }
     }
 
-    public T read(ID id, EntityManager entityManager) {
+    public Optional<T> read(ID id, EntityManager entityManager) {
         try {
-            return entityManager.find(entityClass, id);
+            return Optional.ofNullable(entityManager.find(entityClass, id));
         } catch (Exception e) {
             log.error("An error occurred during read operation: {}", e.getMessage());
-            return null;
+            return Optional.empty();
         }
     }
 

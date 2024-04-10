@@ -2,19 +2,21 @@ package controllers.rest.resources.attendence;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import controllers.rest.annotations.Secured;
+import controllers.rest.beans.PaginationBean;
+import controllers.rest.helpers.utils.RestUtil;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
+import models.DTO.AttendanceDto;
 import models.enums.AttendanceStatus;
 import models.enums.Privilege;
-import controllers.rest.beans.PaginationBean;
+import services.impl.AttendanceService;
 import services.impl.EmployeeService;
 import utils.ApiUtil;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Slf4j
 @Path("attendance")
@@ -23,6 +25,9 @@ public class AttendanceController {
 
     @Context
     private ContainerRequestContext requestContext;
+
+    @Context
+    private UriInfo uriInfo;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -67,7 +72,47 @@ public class AttendanceController {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getAttendance(@BeanParam PaginationBean paginationBean, @QueryParam("type") String type){
-        return Response.ok(EmployeeService.getInstance().readAll(paginationBean.getOffset(), paginationBean.getLimit(), null)).build();
+    public Response getAttendance(@BeanParam PaginationBean paginationBean, @QueryParam("type") String type) {
+        List<AttendanceDto> attendances = AttendanceService.getInstance().readAll(paginationBean.getOffset(), paginationBean.getLimit());
+        AttendanceResponseWrapper attendanceResponseWrapper = new AttendanceResponseWrapper();
+        attendances.forEach(attendanceDto -> {
+            AttendanceResponse attendanceResponse = new AttendanceResponse();
+            attendanceResponse.setAttendanceDto(attendanceDto);
+            attendanceResponseWrapper.addLink(RestUtil.createSelfLink(uriInfo, attendanceDto.getId(), AttendanceController.class));
+        });
+        for (Link link : RestUtil.createPaginatedResourceLink(uriInfo, paginationBean, AttendanceService.getInstance().count())) {
+            attendanceResponseWrapper.addLink(link);
+        }
+        return buildResponse(attendanceResponseWrapper, type);
+    }
+
+    private Response buildResponse(AttendanceResponseWrapper attendanceResponseWrapper, String type) {
+        if (type != null && type.equals("xml")) {
+            return Response.ok(attendanceResponseWrapper).type(MediaType.APPLICATION_XML).build();
+        } else {
+            return Response.ok(attendanceResponseWrapper).type(MediaType.APPLICATION_JSON).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getAttendanceById(@PathParam("id") Long id, @QueryParam("type") String type) {
+        AttendanceDto attendanceDto = AttendanceService.getInstance().read(id);
+        if (attendanceDto == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Attendance not found").build();
+        }
+        AttendanceResponse attendanceResponse = new AttendanceResponse();
+        attendanceResponse.setAttendanceDto(attendanceDto);
+        attendanceResponse.addLink(RestUtil.createSelfLink(uriInfo, attendanceDto.getId(), AttendanceController.class));
+        return buildResponse(attendanceResponse, type);
+    }
+
+    private Response buildResponse(AttendanceResponse attendanceResponse, String type) {
+        if (type != null && type.equals("xml")) {
+            return Response.ok(attendanceResponse).type(MediaType.APPLICATION_XML).build();
+        } else {
+            return Response.ok(attendanceResponse).type(MediaType.APPLICATION_JSON).build();
+        }
     }
 }

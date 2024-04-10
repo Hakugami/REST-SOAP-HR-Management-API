@@ -74,9 +74,12 @@ public class AuthenticationService extends BaseService<Employee, EmployeeDto, Lo
             employee.setSalt(salt);
             employee.setPassword(password);
             if (employeeDto.getDepartmentId() != null) {
-                Department department = DepartmentRepository.getInstance().read(employeeDto.getDepartmentId(), entityManager);
+                Department department = DepartmentRepository.getInstance().read(employeeDto.getDepartmentId(), entityManager).orElse(null);
                 employee.setDepartment(department);
-                employee.setManager(department.getManager());
+
+                if (department!=null) {
+                    employee.setManager(department.getManager());
+                }
             } else if (employeeDto.getDepartmentName() != null) {
                 Department department = DepartmentRepository.getInstance().findByName(employeeDto.getDepartmentName(), entityManager);
                 employee.setDepartment(department);

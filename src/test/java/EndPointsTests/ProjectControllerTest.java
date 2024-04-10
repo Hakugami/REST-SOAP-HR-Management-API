@@ -9,10 +9,12 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.DTO.EmployeeDto;
+import models.DTO.ProjectDto;
+import models.enums.ProjectStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -20,15 +22,15 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EmployeeControllerTest {
+class ProjectControllerTest {
     private static final String Reasons = "no need for this test to be ran everytime";
+    private static final String BASE_URL = "http://localhost:4545/API/webapi/projects";
     private Client client;
-    private static final String BASE_URL = "http://localhost:4545/API/webapi/employees";
     private Jsonb jsonb;
+
     @BeforeEach
     public void setup() {
         client = ClientBuilder.newClient();
@@ -41,7 +43,7 @@ class EmployeeControllerTest {
     }
 
     @Test
-    void shouldGetEmployee() {
+    void shouldGetProject() {
         Response response = client.target(BASE_URL + "/1")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
@@ -51,8 +53,8 @@ class EmployeeControllerTest {
     }
 
     @Test
-    void shouldGetAllEmployeesJson() {
-        Response response = client.target(BASE_URL+"?type=json&limit=1")
+    void shouldGetAllProjectsJson() {
+        Response response = client.target(BASE_URL + "?type=json&limit=1")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
         String prettyJson = jsonb.toJson(response.readEntity(Object.class));
@@ -61,8 +63,8 @@ class EmployeeControllerTest {
     }
 
     @Test
-    void shouldGetAllEmployeesXml() {
-        Response response = client.target(BASE_URL+"?type=xml&limit=1")
+    void shouldGetAllProjectsXml() {
+        Response response = client.target(BASE_URL + "?type=xml&limit=1")
                 .request(MediaType.APPLICATION_XML)
                 .get();
         String prettyXml = formatXml(response.readEntity(String.class));
@@ -83,48 +85,70 @@ class EmployeeControllerTest {
         }
     }
 
-//    @Disabled(Reasons)
+    //    @Disabled(Reasons)
     @Test
-    void shouldCreateEmployee() {
-        EmployeeDto employeeDto = EmployeeDto.builder()
-                .firstName("testFirstName")
-                .lastName("testLastName")
-                .email("test@test.com")
-                .phone("1234567890")
-                .username("testUser")
-                .password("testPassword")
-                .departmentId(2L)
-                .yearsOfExperience(5)
-                .build();
+    void shouldCreateProject() {
+        ProjectDto projectDto = new ProjectDto();
+        // Set properties of projectDto
 
         Response response = client.target(BASE_URL)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(employeeDto, MediaType.APPLICATION_JSON));
+                .post(Entity.entity(projectDto, MediaType.APPLICATION_JSON));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
-//    @Disabled(Reasons)
+    //    @Disabled(Reasons)
     @Test
-    void shouldUpdateEmployee() {
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setFirstName("testFirstName");
-        employeeDto.setLastName("testLastName");
-        // Set properties of employeeDto
+    void shouldUpdateProject() {
+        ProjectDto projectDto = new ProjectDto();
 
-        Response response = client.target(BASE_URL + "/154")
+        Response response = client.target(BASE_URL + "/1")
                 .request(MediaType.APPLICATION_JSON)
-                .put(Entity.entity(employeeDto, MediaType.APPLICATION_JSON));
+                .put(Entity.entity(projectDto, MediaType.APPLICATION_JSON));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
-//    @Disabled(Reasons)
+    //    @Disabled(Reasons)
     @Test
-    void shouldDeleteEmployee() {
-        Response response = client.target(BASE_URL + "/252")
+    void shouldDeleteProject() {
+        Response response = client.target(BASE_URL + "/1")
                 .request(MediaType.APPLICATION_JSON)
                 .delete();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    //    @Disabled(Reasons)
+    @Test
+    void shouldPatchProject() {
+        ProjectDto projectDto = new ProjectDto();
+        projectDto.setName("testName");
+        projectDto.setDescription("testDescription");
+        projectDto.setTeamSize(5);
+        projectDto.setDurationInMonths(6);
+        projectDto.setStatus(String.valueOf(ProjectStatus.IN_PROGRESS));
+
+        Response response = client.target(BASE_URL + "/1")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.entity(projectDto, MediaType.APPLICATION_JSON));
+
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    //    @Disabled(Reasons)
+    @Test
+    void shouldAssignEmployeeToProject() {
+        Long employeeId = 2L; // replace with actual employee id
+
+
+        EmployeeDto employeeDto = new EmployeeDto();
+
+        Response response = client.target(BASE_URL + "/1/employees/" + employeeId)
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.entity(employeeDto, MediaType.APPLICATION_JSON));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
