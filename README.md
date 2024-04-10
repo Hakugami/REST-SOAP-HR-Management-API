@@ -1,8 +1,8 @@
 
 # HR-RESTful-SOAP api 🚪
-![GitHub commit activity](https://img.shields.io/github/commit-activity/t/Hakugami/REST-SOAP-HR-Management-API) ![Github Created At](https://img.shields.io/github/created-at/Hakugami/REST-SOAP-HR-Management-API)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/Hakugami/REST-SOAP-HR-Management-API) 
+![Github Created At](https://img.shields.io/github/created-at/Hakugami/REST-SOAP-HR-Management-API)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Hakugami/REST-SOAP-HR-Management-API) 
-![GitHub License](https://img.shields.io/github/license/Hakugami/REST-SOAP-HR-Management-API)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Hakugami/REST-SOAP-HR-Management-API)
 
 ## Project Description 📝
