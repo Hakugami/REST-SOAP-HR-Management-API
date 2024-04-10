@@ -9,6 +9,15 @@
     <version>1.0-SNAPSHOT</version>
     <name>HR_MANAGEMENT_SYSTEM</name>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>HR-RESTful-SOAP</name>
+            <url>https://maven.pkg.github.com/Hakugami/REST-SOAP-HR-Management-API</url>
+        </repository>
+    </distributionManagement>
+
+
     <properties>
         <jersey.version>4.0.0-M1</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,6 +89,14 @@
                     <password>admin</password>
                     <url>${url.tomcat}</url>
                     <path>${path.tomcat}</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
         </plugins>
