@@ -7,8 +7,10 @@ import controllers.rest.exceptions.custom.UnauthorizedException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.VacationDto;
@@ -18,6 +20,7 @@ import utils.ApiUtil;
 
 @Path("vacations")
 @Slf4j
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class VacationController {
 
 

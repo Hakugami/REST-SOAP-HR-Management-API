@@ -1,5 +1,6 @@
 package services.impl;
 
+import controllers.rest.exceptions.custom.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import mappers.DtoMapper;
 import mappers.EmployeeMapper;
@@ -32,7 +33,8 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public EmployeeProjection employeePartialResponse(Long id, Set<String> fields) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager ->
-                EmployeeRepository.getInstance().employeePartialResponse(id, entityManager, fields).orElse(null));
+                EmployeeRepository.getInstance().employeePartialResponse(id, entityManager, fields).orElseThrow(() ->
+                        new ResourceNotFoundException("Employee not found with id: " + id, 404, "Employee not found")));
     }
 
     public List<EmployeeProjection> getAllEmployeesPartialResponse(Set<String> fields, int page, int pageSize) {
@@ -55,13 +57,15 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
     public boolean assignManager(Long employeeId, Long managerId) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
             log.info("Employee ID: {}", employeeId);
-            Employee employee = EmployeeRepository.getInstance().read(employeeId, entityManager).orElse(null);
+            Employee employee = EmployeeRepository.getInstance().read(employeeId, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Employee not found with id: " + employeeId, 404, "Employee not found"));
             if (employee == null) {
                 log.info("Employee is null");
                 return false;
             }
             log.info("Manager ID: {}", managerId);
-            Employee manager = EmployeeRepository.getInstance().read(managerId, entityManager).orElse(null);
+            Employee manager = EmployeeRepository.getInstance().read(managerId, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Manager not found with id: " + managerId, 404, "Manager not found"));
             if (manager == null) {
                 log.info("Manager is null");
                 return false;
@@ -75,7 +79,8 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
     @Override
     public boolean update(EmployeeDto dto, Long aLong) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElse(null);
+            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Employee not found with id: " + aLong, 404, "Employee not found"));
             if (employee == null) {
                 return false;
             }
@@ -86,7 +91,8 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public boolean delete(Long aLong, boolean isFired) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElse(null);
+            Employee employee = EmployeeRepository.getInstance().read(aLong, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Employee not found with id: " + aLong, 404, "Employee not found"));
             if (employee == null) {
                 return false;
             }
@@ -104,7 +110,8 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public boolean attendance(String email, AttendanceStatus status) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().readByEmail(email, entityManager).orElse(null);
+            Employee employee = EmployeeRepository.getInstance().readByEmail(email, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Employee not found with email: " + email, 404, "Employee not found"));
             if (employee == null) {
                 return false;
             }
@@ -131,7 +138,8 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
 
     public EmployeeProjection getManager(Long id) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
-            Employee employee = EmployeeRepository.getInstance().read(id, entityManager).orElse(null);
+            Employee employee = EmployeeRepository.getInstance().read(id, entityManager).orElseThrow(() ->
+                    new ResourceNotFoundException("Employee not found with id: " + id, 404, "Employee not found"));
             if (employee == null) {
                 return null;
             }

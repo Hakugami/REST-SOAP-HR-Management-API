@@ -51,7 +51,7 @@ public class DepartmentService extends BaseService<Department, DepartmentDto, Lo
                 department.setActive(false);
             }
             repository.update(department, entityManager);
-            return repository.delete(aLong, entityManager);
+            return repository.update(department, entityManager);
         });
     }
 

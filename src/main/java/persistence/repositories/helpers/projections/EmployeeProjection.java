@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 
 @Data
 @ToString
-@XmlRootElement
+@XmlRootElement(name = "employee")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EmployeeProjection implements Serializable {
     private Long id;

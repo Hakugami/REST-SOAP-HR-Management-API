@@ -25,4 +25,15 @@
     </servlet-mapping>
 
 
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>JAXWSservlet</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+
 </web-app>

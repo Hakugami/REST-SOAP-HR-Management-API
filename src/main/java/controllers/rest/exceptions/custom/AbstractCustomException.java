@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public abstract class AbstractCustomException extends Exception {
+public abstract class AbstractCustomException extends RuntimeException {
     ErrorMessage errorMessage;
 
     protected AbstractCustomException() {

@@ -1,0 +1,24 @@
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+    <endpoint name="Employee" implementation="controllers.soap.Endpoints.employee.EmployeeWebService"
+              url-pattern="/soap/employee">
+    </endpoint>
+    <endpoint name="Job" implementation="controllers.soap.Endpoints.job.JobWebService"
+              url-pattern="/soap/job">
+    </endpoint>
+    <endpoint name="Project" implementation="controllers.soap.Endpoints.project.ProjectWebService"
+              url-pattern="/soap/project">
+    </endpoint>
+    <endpoint name="Department" implementation="controllers.soap.Endpoints.department.DepartmentWebService"
+              url-pattern="/soap/department">
+    </endpoint>
+    <endpoint name="Auth" implementation="controllers.soap.Endpoints.auth.AuthenticationWebService"
+              url-pattern="/soap/auth">
+    </endpoint>
+    <endpoint name="Attendance" implementation="controllers.soap.Endpoints.attendance.AttendanceWebService"
+              url-pattern="/soap/attendance">
+    </endpoint>
+
+    <endpoint name="Vacation" implementation="controllers.soap.Endpoints.vacation.VacationWebService"
+              url-pattern="/soap/vacation">
+    </endpoint>
+</endpoints>

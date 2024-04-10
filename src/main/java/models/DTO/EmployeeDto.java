@@ -1,12 +1,16 @@
 package models.DTO;
 
 //import controllers.rest.helpers.adapters.LocalDateDeserializer;
+import controllers.soap.adapters.LocalDateAdapter;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.json.bind.annotation.JsonbNillable;
 import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.validation.constraints.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.*;
 import models.enums.JobTitle;
 import models.enums.Privilege;
@@ -24,6 +28,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD) // This line is added
 @JsonbNillable
 public class EmployeeDto extends BaseDTO implements Serializable {
 
@@ -47,14 +52,19 @@ public class EmployeeDto extends BaseDTO implements Serializable {
     @JsonbDateFormat("yyyy-MM-dd")
 //    @JsonbTypeDeserializer(LocalDateDeserializer.class)
     @Past(message = "Birth date should be in the past")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     LocalDate birthDate;
 
     @JsonbDateFormat("yyyy-MM-dd")
 //    @JsonbTypeDeserializer(LocalDateDeserializer.class)
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+
     LocalDate hireDate;
 
     @JsonbDateFormat("yyyy-MM-dd")
 //    @JsonbTypeDeserializer(LocalDateDeserializer.class)
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+
     LocalDate fireDate;
     BigDecimal salary;
     Boolean isHired;
