@@ -4,10 +4,10 @@
 ![Github Created At](https://img.shields.io/github/created-at/Hakugami/REST-SOAP-HR-Management-API)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Hakugami/REST-SOAP-HR-Management-API) 
 ![GitHub repo size](https://img.shields.io/github/repo-size/Hakugami/REST-SOAP-HR-Management-API)
+![License](https://img.shields.io/github/license/Hakugami/REST-SOAP-HR-Management-API)
 
 ## Project Description 📝
 An API that helps the HR do (his/her) job faster and more efficient
-
 
 
 
@@ -28,6 +28,7 @@ https://documenter.getpostman.com/view/33538335/2sA3BgBvVn
 - **Sign In with JWT authentication and authorization** 🔐
 - **Partial Responses and pagination for Resources** 👤
 - **Request vacations and view all vacation requests with the ability to deny or approve** 🛍️
+- **Mark attendance as an employee with automatic deductions, HR(Any privileged user) can view all the data** 🖥
 
 
 
@@ -40,6 +41,8 @@ https://documenter.getpostman.com/view/33538335/2sA3BgBvVn
 ![Mapstruct](https://img.shields.io/badge/Mapstruct-blue?style=for-the-badge&logo=java&logoColor=white)&nbsp;&nbsp;&nbsp;&nbsp;
 ![JSON](https://img.shields.io/badge/JSON-blue?style=for-the-badge&logo=json)&nbsp;&nbsp;&nbsp;&nbsp;
 ![XML](https://img.shields.io/badge/XML-blue?style=for-the-badge&logo=XML)&nbsp;&nbsp;&nbsp;&nbsp;
+![JAX-RS](https://img.shields.io/badge/JAX-RS-blue?style=for-the-badge&logo=JAX-RS)&nbsp;&nbsp;&nbsp;&nbsp;
+![JAX-WS](https://img.shields.io/badge/JAX-WS-blue?style=for-the-badge&logo=JAX-WS)&nbsp;&nbsp;&nbsp;&nbsp;
 ![Maven](https://img.shields.io/badge/Maven-blue?style=for-the-badge&logo=apache)
 
 # Architecture
