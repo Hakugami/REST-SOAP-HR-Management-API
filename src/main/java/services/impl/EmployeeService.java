@@ -4,6 +4,7 @@ import controllers.rest.exceptions.custom.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import mappers.DtoMapper;
 import mappers.EmployeeMapper;
+import mappers.ProjectionMapper;
 import models.DTO.EmployeeDto;
 import models.entities.Attendance;
 import models.entities.Employee;
@@ -147,7 +148,7 @@ public class EmployeeService extends BaseService<Employee, EmployeeDto, Long> {
             if (manager == null) {
                 return null;
             }
-            return DtoMapper.INSTANCE.employeeDtoToEmployee(EmployeeMapper.INSTANCE.toDTO(manager));
+            return ProjectionMapper.INSTANCE.toProjection(manager);
         });
 
 

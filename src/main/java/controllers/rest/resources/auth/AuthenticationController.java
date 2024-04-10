@@ -4,11 +4,14 @@ import controllers.rest.annotations.Secured;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.DTO.LoginDto;
 import models.enums.Privilege;
 import services.impl.AuthenticationService;
+
+import java.util.Map;
 
 @Path("/auth")
 @Secured(value = Privilege.ALL)
@@ -22,6 +25,9 @@ public class AuthenticationController {
         if (loginToken == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        return Response.ok().header("Authorization", "Bearer " + loginToken).build();
+        Map<String, String> message = Map.of("message", "Login successful");
+        GenericEntity<Map<String, String>> entity = new GenericEntity<>(message) {
+        };
+        return Response.ok().header("Authorization", "Bearer " + loginToken).entity(entity).build();
     }
 }

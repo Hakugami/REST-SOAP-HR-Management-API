@@ -1,5 +1,6 @@
 package controllers.rest.resources.project;
 
+import controllers.rest.annotations.Secured;
 import controllers.rest.beans.PaginationBean;
 import controllers.rest.helpers.utils.RestUtil;
 import jakarta.validation.Valid;
@@ -7,6 +8,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.ProjectDto;
+import models.enums.Privilege;
 import services.impl.ProjectService;
 
 import java.net.URI;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Path("projects")
 @Slf4j
+@Secured(Privilege.HR)
 public class ProjectController {
     @Context
     private UriInfo uriInfo;

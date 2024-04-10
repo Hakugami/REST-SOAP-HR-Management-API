@@ -17,6 +17,7 @@ import utils.ApiUtil;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Path("attendance")
@@ -64,14 +65,21 @@ public class AttendanceController {
     private Response markAttendanceAndGenerateResponse(String email, AttendanceStatus attendanceStatus) {
         boolean result = EmployeeService.getInstance().attendance(email, attendanceStatus);
         if (result) {
-            return Response.status(Response.Status.OK).entity("Attendance marked as " + attendanceStatus).build();
+            Map<String, String> responseMap = Map.of("message", "Attendance marked successfully", "status", attendanceStatus.toString());
+            GenericEntity<Map<String, String>> entity = new GenericEntity<>(responseMap) {
+            };
+            return Response.ok().entity(entity).build();
         } else {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An error occurred while marking attendance").build();
+            Map<String, String> responseMap = Map.of("message", "Attendance marking failed", "status", attendanceStatus.toString());
+            GenericEntity<Map<String, String>> entity = new GenericEntity<>(responseMap) {
+            };
+            return Response.status(Response.Status.BAD_REQUEST).entity(entity).build();
         }
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Secured(Privilege.HR)
     public Response getAttendance(@BeanParam PaginationBean paginationBean, @QueryParam("type") String type) {
         List<AttendanceDto> attendances = AttendanceService.getInstance().readAll(paginationBean.getOffset(), paginationBean.getLimit());
         AttendanceResponseWrapper attendanceResponseWrapper = new AttendanceResponseWrapper();
@@ -96,6 +104,7 @@ public class AttendanceController {
 
     @GET
     @Path("/{id}")
+    @Secured(Privilege.HR)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getAttendanceById(@PathParam("id") Long id, @QueryParam("type") String type) {
         AttendanceDto attendanceDto = AttendanceService.getInstance().read(id);

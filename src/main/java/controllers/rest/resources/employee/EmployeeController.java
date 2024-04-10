@@ -16,11 +16,12 @@ import utils.ApiUtil;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Path("employees")
 @Slf4j
-@Secured(value = Privilege.ALL)
+@Secured(value = Privilege.HR)
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class EmployeeController {
@@ -123,7 +124,10 @@ public class EmployeeController {
         log.info("Deleting employee with id: {} isFired: {}", id, isFired);
         boolean deleted = EmployeeService.getInstance().delete(id, isFired);
         if (deleted) {
-            return Response.ok("Employee left the company").build();
+            Map<String, String> response = Map.of("message", "Employee deleted successfully");
+            GenericEntity<Map<String, String>> entity = new GenericEntity<>(response) {
+            };
+            return Response.ok(entity).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -162,7 +166,11 @@ public class EmployeeController {
                 return Response.status(Response.Status.NOT_FOUND).entity("Failed to assign manager").build();
             } else {
                 Link selfLink = RestUtil.createSelfLink(uriInfo, employeeId, EmployeeController.class);
-                return Response.ok("Updated Successfully").links(selfLink).build();
+                //map of message and self link
+                Map<String, Object> response = Map.of("message", "Manager assigned successfully", "self", selfLink);
+                GenericEntity<Map<String, Object>> entity = new GenericEntity<>(response) {
+                };
+                return Response.ok(entity).build();
             }
         } catch (Exception e) {
             log.error("Exception occurred while assigning manager", e);
@@ -178,7 +186,10 @@ public class EmployeeController {
         log.info("Getting manager for employee with id: {}", id);
         EmployeeProjection manager = EmployeeService.getInstance().getManager(id);
         if (manager == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Manager not found").build();
+            Map<String, String> response = Map.of("message", "Manager not found");
+            GenericEntity<Map<String, String>> entity = new GenericEntity<>(response) {
+            };
+            return Response.status(Response.Status.NOT_FOUND).entity(entity).build();
         } else {
             EmployeeResponse employeeResponse = new EmployeeResponse();
             employeeResponse.setEmployee(manager);

@@ -33,7 +33,7 @@ public class Vacation extends BaseEntity {
     @Column(name = "is_approved" , nullable = false)
     private Boolean isApproved;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

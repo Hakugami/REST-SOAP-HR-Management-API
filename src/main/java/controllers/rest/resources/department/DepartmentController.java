@@ -1,5 +1,6 @@
 package controllers.rest.resources.department;
 
+import controllers.rest.annotations.Secured;
 import controllers.rest.beans.PaginationBean;
 import controllers.rest.exceptions.custom.ResourceNotFoundException;
 import controllers.rest.helpers.utils.RestUtil;
@@ -10,14 +11,17 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.DepartmentDto;
+import models.enums.Privilege;
 import persistence.repositories.helpers.projections.EmployeeProjection;
 import services.impl.DepartmentService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Path("departments")
+@Secured(Privilege.HR)
 public class DepartmentController {
     @Context
     private UriInfo uriInfo;
@@ -169,7 +173,11 @@ public class DepartmentController {
         log.info("Deleting department...");
         try {
             DepartmentService.getInstance().delete(id);
-            return Response.ok().build();
+            log.info("Department deleted");
+            Map<String, String> response = Map.of("message", "Department deleted successfully");
+            GenericEntity<Map<String, String>> entity = new GenericEntity<>(response) {
+            };
+            return Response.ok(entity).build();
         } catch (Exception e) {
             log.error("Exception occurred while deleting department", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Exception occurred while deleting department").build();
@@ -190,8 +198,10 @@ public class DepartmentController {
                 log.error("Manager not assigned to department");
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Manager not assigned to department").build();
             } else {
-                log.info("Manager assigned to department");
-                return Response.ok("Manager assigned successfully").build();
+                Map<String, String> response = Map.of("message", "Manager assigned to department successfully");
+                GenericEntity<Map<String, String>> entity = new GenericEntity<>(response) {
+                };
+                return Response.ok(entity).build();
             }
         } catch (Exception e) {
             log.error("Exception occurred while assigning manager to department", e);

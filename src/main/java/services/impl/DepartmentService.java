@@ -3,6 +3,7 @@ package services.impl;
 import mappers.DepartmentMapper;
 import mappers.DtoMapper;
 import mappers.EmployeeMapper;
+import mappers.ProjectionMapper;
 import models.DTO.DepartmentDto;
 import models.DTO.EmployeeDto;
 import models.entities.Department;
@@ -58,9 +59,7 @@ public class DepartmentService extends BaseService<Department, DepartmentDto, Lo
     public List<EmployeeProjection> getEmployees(Long id, int offset, int limit) {
         return DatabaseSingleton.INSTANCE.doInTransactionWithResult(entityManager -> {
             List<Employee> employees = DepartmentRepository.getInstance().getEmployees(id, offset, limit, entityManager);
-            List<EmployeeDto> employeeDtos = employees.stream().map(EmployeeMapper.INSTANCE::toDTO).toList();
-            return employeeDtos.stream().map(DtoMapper.INSTANCE::employeeDtoToEmployee).toList();
-
+            return ProjectionMapper.INSTANCE.toProjectionList(employees);
         });
     }
 

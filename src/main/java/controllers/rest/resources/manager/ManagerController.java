@@ -1,5 +1,6 @@
 package controllers.rest.resources.manager;
 
+import controllers.rest.annotations.Secured;
 import controllers.rest.beans.PaginationBean;
 import controllers.rest.helpers.utils.RestUtil;
 import controllers.rest.resources.employee.EmployeeResponse;
@@ -8,6 +9,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import lombok.extern.slf4j.Slf4j;
 import models.DTO.EmployeeDto;
+import models.enums.Privilege;
 import persistence.repositories.helpers.projections.EmployeeProjection;
 import services.impl.EmployeeService;
 import services.impl.ManagerService;
@@ -18,6 +20,7 @@ import java.util.Set;
 
 @Slf4j
 @Path("managers")
+@Secured(Privilege.MANAGER)
 public class ManagerController {
     @Context
     private UriInfo uriInfo;

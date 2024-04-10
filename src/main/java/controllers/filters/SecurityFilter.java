@@ -2,6 +2,7 @@ package controllers.filters;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import controllers.rest.annotations.Secured;
+import controllers.rest.exceptions.custom.UnauthorizedException;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -55,7 +56,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         String authorizationHeader = requestContext.getHeaderString(AUTHORIZATION_HEADER);
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            redirectToLogin(requestContext);
+            throwUnauthorizedException();
             return;
         }
 
@@ -64,23 +65,23 @@ public class SecurityFilter implements ContainerRequestFilter {
             log.info("Required privilege: {}", requiredPrivilege);
             JWTClaimsSet claimsSet = jwtUtil.verifyJWT(token, requiredPrivilege);
             if (claimsSet == null) {
-                redirectToLogin(requestContext);
+                throwUnauthorizedException();
             } else {
                 Privilege tokenPrivilege = Privilege.valueOf(claimsSet.getClaim("privileges").toString());
                 log.info("Token privilege: {}", tokenPrivilege);
                 if (tokenPrivilege.compareTo(requiredPrivilege) < 0) {
-                    redirectToLogin(requestContext);
+                    throwUnauthorizedException();
                 }
             }
         } catch (Exception e) {
-            redirectToLogin(requestContext);
+            throwUnauthorizedException();
         }
     }
 
-    private void redirectToLogin(ContainerRequestContext requestContext) {
+    private void throwUnauthorizedException() throws UnauthorizedException {
         UriBuilder builder = uriInfo.getBaseUriBuilder().path("auth/login");
         URI loginUri = builder.build();
         String message = "Unauthorized access. Please login at: " + loginUri.toString();
-        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(message).build());
+        throw new UnauthorizedException(message, Response.Status.UNAUTHORIZED.getStatusCode(), "You are not authorized to access this resource. Please login.");
     }
 }

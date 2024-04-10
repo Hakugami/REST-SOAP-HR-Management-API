@@ -13,6 +13,7 @@ import services.impl.JobService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Path("jobs")
@@ -156,7 +157,10 @@ public class JobController {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to delete job").build();
             } else {
                 log.info("Job deleted successfully");
-                return Response.ok().build();
+                Map<String, String> response = Map.of("message", "Job deleted successfully");
+                GenericEntity<Map<String, String>> entity = new GenericEntity<>(response) {
+                };
+                return Response.ok(entity).build();
             }
         } catch (Exception e) {
             log.error("Exception occurred while deleting job", e);
