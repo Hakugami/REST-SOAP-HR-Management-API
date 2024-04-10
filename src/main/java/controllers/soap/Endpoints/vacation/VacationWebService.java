@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import models.DTO.VacationDto;
 import services.impl.VacationService;
 
+import java.util.List;
+
 
 @WebService
 @Slf4j
@@ -48,5 +50,20 @@ public class VacationWebService {
         } else {
             return "Vacation request rejection failed";
         }
+    }
+
+    @WebMethod
+    public String getVacation(@WebParam(name = "id") Long id) {
+        VacationDto vacationDto = VacationService.getInstance().read(id);
+        if (vacationDto != null) {
+            return vacationDto.toString();
+        } else {
+            return "Vacation not found";
+        }
+    }
+
+    @WebMethod
+    public List<VacationDto> getVacations(@WebParam(name = "limit") int limit, @WebParam(name = "offset") int offset) {
+        return VacationService.getInstance().readAll(offset, limit);
     }
 }
